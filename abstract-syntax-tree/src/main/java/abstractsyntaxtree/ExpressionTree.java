@@ -268,7 +268,15 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 		ExpressionTree result = this.clone();
 		
-		TreeNode otherSubTree = otherGetRandomSubTree(other.root, other.root.treeSize);
+		int otherRandomPosition = this.rand.nextInt(other.root.treeSize);
+		
+		TreeNode otherSubTree = null;
+		
+		if (otherRandomPosition == 0)
+			otherSubTree = other.root;
+			
+		else
+			otherSubTree = otherGetRandomSubTree(other.root, otherRandomPosition);
 
 		startCrossOver(result, otherSubTree);
 		
@@ -299,12 +307,20 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		
 	}
 
-	private TreeNode otherGetRandomSubTree(TreeNode otherTreeNode, int treeSize) {
+	private TreeNode otherGetRandomSubTree(TreeNode otherTreeNode, int index) {
 		
 		// If it isn't a leaf node
 		if (!(otherTreeNode instanceof ConstantTreeNode)) {
-
-			//TODO:
+			
+			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) otherTreeNode;
+			
+			int leftTreeSize = treeNode.left.treeSize;
+			int rightTreeSize = treeNode.right.treeSize;
+			
+			if (index > leftTreeSize) {
+				
+				this.otherGetRandomSubTree(treeNode.right, index - leftTreeSize - 1)
+			}
 		}	
 		
 		return otherTreeNode;
