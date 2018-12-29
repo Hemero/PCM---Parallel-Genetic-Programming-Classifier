@@ -149,31 +149,26 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 		// if prob is less than the constant, generate a binary operator
 		if (prob < CONST_NODE_GEN) {
+			
 			root = new BinaryOperatorTreeNode(ExpressionBinaryOperator.randomBinaryOperator());
+			
 			depth++;
+			
 			generateNode(depth, root, true);
 			generateNode(depth, root, false);
 		} else {
-			// if not generate a constant
-			double prob2 = rand.nextDouble();
-
-			if (prob2 < (CONST_VAR_GEN * variables.length)) {
-				// root will be one of the variable names
-				root = new ConstantTreeNode(generateVariableName(prob2));
-			} else {
-				// root will be an int
-				root = new ConstantTreeNode(generateValue());
-			}
+			
+			this.root = auxiliaryGenerateConstantTreeNode();
 		}
 	}
 
 	/**
-	 * Generates a node
+	 * Generates a node that can be constant or binary operator
 	 * @param depth
-	 * @param currentNode
-	 * @param b 
+	 * @param currentNode - parent of the node to be generated
+	 * @param isLeft - true if it will be left child
 	 */
-	private void generateNode(int depth, TreeNode currentNode, boolean b) {
+	private void generateNode(int depth, TreeNode currentNode, boolean isLeft) {
 		if (depth < TREE_DEPTH) {
 
 			// Node can be either constant or binary op
@@ -182,11 +177,11 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			if (prob < CONST_NODE_GEN) {
 				
 				// node will be a binary operator
-				generateBinaryOperatorTreeNode(currentNode, b);
+				generateBinaryOperatorTreeNode(currentNode, isLeft);
 				depth++;
 				
 				// children must be generated
-				if (b) {
+				if (isLeft) {
 					generateNode(depth,((BinaryOperatorTreeNode)currentNode).left, true);
 					generateNode(depth,((BinaryOperatorTreeNode)currentNode).left, false);
 				} else {
@@ -196,39 +191,51 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			} else {
 				
 				// node will be constant and will have no children
-				generateConstantTreeNode(currentNode, b);
+				generateConstantTreeNode(currentNode, isLeft);
 			}
 
 		} else {
 			// if max depth is reached node has to be constant
-			generateConstantTreeNode(currentNode, b);
+			generateConstantTreeNode(currentNode, isLeft);
 		}
 	}
 
 
 	/**
-	 * @param currentNode
-	 * @param b
+	 * Generates a child of currentNode as a constant tree node 
+	 * @param currentNode - parent of the node to be generated
+	 * @param isLeft - true if it will be left child
 	 */
-	private void generateConstantTreeNode(TreeNode currentNode, boolean b) {
-		String res = "";
-		double prob = rand.nextDouble();
+	private void generateConstantTreeNode(TreeNode currentNode, boolean isLeft) {
 		
-		if (prob < CONST_NODE_GEN) {
-			// res will be one of the variable names
-			res = generateVariableName(prob);
-		} else {
-			// res will be an int
-			res = generateValue();
-		}
-		
-		if (b) {
+		if (isLeft) {
 			((BinaryOperatorTreeNode)currentNode).left = 
-					new ConstantTreeNode(res);
+					auxiliaryGenerateConstantTreeNode();
 		} else {
 			((BinaryOperatorTreeNode)currentNode).right = 
-					new ConstantTreeNode(res);
+					auxiliaryGenerateConstantTreeNode();
 		}
+	}
+	
+	/**
+	 * Auxiliary method that decides if node will have a variable or integer value
+	 * @return a Constant Tree Node
+	 */
+	private ConstantTreeNode auxiliaryGenerateConstantTreeNode() {
+		ConstantTreeNode node;
+		
+		// if not generate a constant
+		double prob = rand.nextDouble();
+
+		if (prob < CONST_VAR_GEN) {
+			// root will be one of the variable names
+			node = new ConstantTreeNode(generateVariableName());
+		} else {
+			// root will be an int
+			node = new ConstantTreeNode(generateValue());
+		}
+		
+		return node;
 	}
 	
 	/**
@@ -236,19 +243,13 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 * @param prob - probability value between 0 and 1
 	 * @return one of the variable names
 	 */
-	private String generateVariableName(double prob) {
-		int i = 0;
-		
-		// i indicates the current variable index
-		while (prob > ((i+1) * CONST_VAR_GEN)) {
-			i++;
-		}
-		
+	private String generateVariableName() {
+		int i = rand.nextInt(variables.length);
 		return variables[i];
 	}
 
 	/**
-	 * Generates a random integer between LOWER_BOUND and UPPER_BOUND
+	 * Generates a random integer between -UPPER_BOUND and UPPER_BOUND
 	 * @return a String representation of the generated value
 	 */
 	private String generateValue() {
@@ -256,11 +257,12 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	}
 
 	/**
-	 * @param currentNode
-	 * @param b
+	 * 
+	 * @param currentNode - parent of the node to be generated
+	 * @param isLeft - true if it will be left child
 	 */
-	private void generateBinaryOperatorTreeNode(TreeNode currentNode, boolean b) {
-		if (b) {
+	private void generateBinaryOperatorTreeNode(TreeNode currentNode, boolean isLeft) {
+		if (isLeft) {
 			((BinaryOperatorTreeNode)currentNode).left = 
 					new BinaryOperatorTreeNode(ExpressionBinaryOperator.randomBinaryOperator());
 		} else {
@@ -355,16 +357,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 				nodeToMutate = new BinaryOperatorTreeNode(ExpressionBinaryOperator.randomBinaryOperator());
 			} else {
 				
-				// if not generate a constant
-				double prob = rand.nextDouble();
-
-				if (prob < (CONST_VAR_GEN * variables.length)) {
-					// root will be one of the variable names
-					root = new ConstantTreeNode(generateVariableName(prob));
-				} else {
-					// root will be an int
-					root = new ConstantTreeNode(generateValue());
-				}
+				nodeToMutate = auxiliaryGenerateConstantTreeNode();
 			}
 		}
 		
