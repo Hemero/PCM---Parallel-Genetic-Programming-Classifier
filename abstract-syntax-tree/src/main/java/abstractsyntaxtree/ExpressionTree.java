@@ -78,7 +78,6 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	private static double CONST_VAR_GEN;
 	
 	private static final int UPPER_BOUND = Integer.MAX_VALUE;
-	private static final int LOWER_BOUND = Integer.MIN_VALUE;
 
 	// ExpressionTree Attributes
 	private TreeNode root;
@@ -107,8 +106,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 */
 	@Override
 	public void generateTree() {
-		int depth = 0;
-		generateRoot(depth);
+		
+		generateRoot(0);
 		calculateTreeSizes(this.root);
 	}
 
@@ -317,9 +316,60 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	public ExpressionTree mutate() {
 
 		ExpressionTree result = this.clone();
-		// TODO:
+		
+		int mutationPoint = rand.nextInt(this.root.treeSize);
+		
+		TreeNode nodeToMutate = findNode(mutationPoint, this.root);
+		
+		if (nodeToMutate != null) {
+			
+			// generate a binary op node
+			if (nodeToMutate instanceof BinaryOperatorTreeNode) {
+				
+				nodeToMutate = new BinaryOperatorTreeNode(ExpressionBinaryOperator.randomBinaryOperator());
+			} else {
+				
+				// if not generate a constant
+				double prob = rand.nextDouble();
 
+				if (prob < (CONST_VAR_GEN * variables.length)) {
+					// root will be one of the variable names
+					root = new ConstantTreeNode(generateVariableName(prob));
+				} else {
+					// root will be an int
+					root = new ConstantTreeNode(generateValue());
+				}
+			}
+		}
+		
 		return result;
+	}
+
+	/**
+	 * Find node which has tree
+	 * @param value
+	 * @param node
+	 * @return
+	 */
+	private TreeNode findNode(int value, TreeNode node) {
+		TreeNode res = null;
+		
+		if (value == node.treeSize) {
+			
+			res = node;
+		} else {
+			
+			BinaryOperatorTreeNode binNode = (BinaryOperatorTreeNode)node;
+			
+			// go to the subtree where treeSize is >= value
+			if (binNode.left.treeSize >= value) {
+				findNode(value - binNode.left.treeSize - 1, binNode.left);
+			} else {
+				findNode(value - binNode.right.treeSize - 1, binNode.right);
+			}
+		}
+		
+		return res;
 	}
 
 	@Override
