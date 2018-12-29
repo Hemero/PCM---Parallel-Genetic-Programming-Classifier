@@ -217,9 +217,9 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		// if not generate a constant
 		double prob = rand.nextDouble();
 
-		if (prob < (CONST_VAR_GEN * variables.length)) {
+		if (prob < CONST_VAR_GEN) {
 			// root will be one of the variable names
-			node = new ConstantTreeNode(generateVariableName(prob));
+			node = new ConstantTreeNode(generateVariableName());
 		} else {
 			// root will be an int
 			node = new ConstantTreeNode(generateValue());
@@ -233,14 +233,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 * @param prob - probability value between 0 and 1
 	 * @return one of the variable names
 	 */
-	private String generateVariableName(double prob) {
-		int i = 0;
-		
-		// i indicates the current variable index
-		while (prob > ((i+1) * CONST_VAR_GEN)) {
-			i++;
-		}
-		
+	private String generateVariableName() {
+		int i = rand.nextInt(variables.length);
 		return variables[i];
 	}
 
