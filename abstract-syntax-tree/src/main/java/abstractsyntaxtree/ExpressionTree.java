@@ -43,6 +43,11 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 			return new ConstantTreeNode(constant);
 		}
+		
+		public String toString() {
+			
+			return constant;
+		}
 	}
 
 	/**
@@ -69,6 +74,11 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			result.treeSize = this.treeSize;
 			
 			return result;
+		}	
+		
+		public String toString() {
+			
+			return operator.toString();
 		}
 	}
 
@@ -318,7 +328,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			
 			if (index > leftTreeSize) {
 				
-				this.otherGetRandomSubTree(treeNode.right, index - leftTreeSize - 1)
+				this.otherGetRandomSubTree(treeNode.right, index - leftTreeSize - 1);
 			}
 		}	
 		
@@ -335,7 +345,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		
 		int mutationPoint = rand.nextInt(this.root.treeSize);
 		
-		TreeNode nodeToMutate = findNode(mutationPoint, this.root);
+		TreeNode nodeToMutate = findNode(this.root, mutationPoint);
 		
 		if (nodeToMutate != null) {
 			
@@ -367,27 +377,28 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 * @param node
 	 * @return
 	 */
-	private TreeNode findNode(int value, TreeNode node) {
-		TreeNode res = null;
+	private TreeNode findNode(TreeNode node, int indice) {
+				
+		if (node instanceof ConstantTreeNode)
+			return node;
 		
-		if (value == node.treeSize) {
+		else {
 			
-			res = node;
-		} else {
+			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) node;
 			
-			BinaryOperatorTreeNode binNode = (BinaryOperatorTreeNode)node;
+			int leftSize = treeNode.left.treeSize;
 			
-			// go to the subtree where treeSize is >= value
-			if (binNode.left.treeSize >= value) {
-				findNode(value - binNode.left.treeSize - 1, binNode.left);
-			} else {
-				findNode(value - binNode.right.treeSize - 1, binNode.right);
-			}
+			if (indice < leftSize) 
+				return findNode(treeNode.left, indice);
+			
+			else if (indice > leftSize)
+				return findNode(treeNode.right, indice - leftSize - 1);
+			
+			else 
+				return node;
 		}
-		
-		return res;
 	}
-
+	
 	@Override
 	public void setFitness(double fitness) {
 		// TODO Auto-generated method stub	
