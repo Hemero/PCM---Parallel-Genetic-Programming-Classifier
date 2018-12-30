@@ -84,7 +84,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	
 	private Random rand;
 	
-	private int fitness;
+	private double fitness;
 	private String[] variables;
 
 	/**
@@ -403,13 +403,12 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	
 	@Override
 	public void setFitness(double fitness) {
-		// TODO Auto-generated method stub	
+		this.fitness = fitness;	
 	}
 
 	@Override
 	public double getFitness() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.fitness;
 	}
 	
 	/**
