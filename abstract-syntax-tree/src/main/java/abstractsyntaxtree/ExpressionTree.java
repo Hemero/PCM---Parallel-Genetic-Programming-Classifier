@@ -277,21 +277,20 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		ExpressionTree result = this.clone();
 		
 		int randomIndexOther = this.rand.nextInt(other.root.treeSize);
-		
 		TreeNode treeNodeOther = this.findNode(other.root, randomIndexOther);
-				
-		if (this.root.treeSize == 1)
+
+		if (result.root.treeSize == 1)
 			result.root = treeNodeOther;
 		
 		else
-			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther);
+			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther, result.root.treeSize);
 		
 		calculateTreeSizes(result.root);
 		
 		return result;
 	}
 
-	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther) {
+	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther, int originalSize) {
 		
 		// If father of two leaf constant tree nodes
 		if ((currentNode.left instanceof ConstantTreeNode) && (currentNode.right instanceof ConstantTreeNode)) {
@@ -310,27 +309,35 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		// If leaf node is a constant tree node
 		else if (currentNode.left instanceof ConstantTreeNode) {
 			
-			double chanceOfLeft = 1.0 / (currentNode.treeSize - 1);
+			double chanceOfLeft = 1.0 / originalSize;
+			double chanceOfRight = chanceOfLeft + 1.0 / originalSize;
 			double chosenDirection = this.rand.nextDouble();
-			
+
 			if (chosenDirection < chanceOfLeft)
 				currentNode.left = treeNodeOther;
 			
+			else if (chosenDirection < chanceOfRight)
+				currentNode.right = treeNodeOther;
+			
 			else
-				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther);
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther, originalSize);
 		}
 		
 		// If right node is a constant tree node
 		else {
 
-			double chanceOfRight = 1.0 / (currentNode.treeSize - 1);
+			double chanceOfRight = 1.0 / originalSize;
+			double chanceOfLeft = chanceOfRight + 1.0 / originalSize;
 			double chosenDirection = this.rand.nextDouble();
-			
+
 			if (chosenDirection < chanceOfRight)
 				currentNode.right = treeNodeOther;
 			
+			else if (chosenDirection < chanceOfLeft)
+				currentNode.left = treeNodeOther;
+			
 			else
-				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther);
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther, originalSize);
 		}
 	}
 
@@ -479,6 +486,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 			if (this.root instanceof BinaryOperatorTreeNode)
 				auxiliaryClone((BinaryOperatorTreeNode) result.root, (BinaryOperatorTreeNode) this.root);
+		
+			this.calculateTreeSizes(result.root);
 		}
 
 		return result;

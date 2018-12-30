@@ -13,11 +13,11 @@ public class Tests {
 		ExpressionTree tree2 = new ExpressionTree(vars);
 		tree2.generateTree();
 
-		System.out.println(tree);
-		System.out.println(tree2);
-		
 		ExpressionTree crossed = tree.crossOverWith(tree2);
 		
-		System.out.println(crossed);
+		System.out.println("Tree 1: " + tree);
+		System.out.println("Tree 2: " + tree2);
+		
+		System.out.println("Crossed Tree: " + crossed);
 	}
 }
