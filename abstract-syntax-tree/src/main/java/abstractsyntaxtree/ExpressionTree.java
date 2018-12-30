@@ -291,14 +291,14 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			result.root = treeNodeOther;
 		
 		else
-			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther, result.root.treeSize);
+			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther, result.root.treeSize, 0);
 		
 		calculateTreeSizes(result.root);
 		
 		return result;
 	}
-
-	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther, int originalSize) {
+	
+	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther, int originalSize, int depth) {
 		
 		// If father of two leaf constant tree nodes
 		if ((currentNode.left instanceof ConstantTreeNode) && (currentNode.right instanceof ConstantTreeNode)) {
@@ -312,6 +312,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			// Choose right son
 			else
 				currentNode.right = treeNodeOther;
+			
+			checkDepth(currentNode, depth);
 		}
 		
 		// If leaf node is a constant tree node
@@ -321,14 +323,18 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			double chanceOfRight = chanceOfLeft + 1.0 / originalSize;
 			double chosenDirection = this.rand.nextDouble();
 
-			if (chosenDirection < chanceOfLeft)
+			if (chosenDirection < chanceOfLeft) {
 				currentNode.left = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
-			else if (chosenDirection < chanceOfRight)
+			else if (chosenDirection < chanceOfRight) {
 				currentNode.right = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
 			else
-				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther, originalSize);
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther, originalSize, depth + 1);
 		}
 		
 		// If right node is a constant tree node
@@ -338,14 +344,39 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			double chanceOfLeft = chanceOfRight + 1.0 / originalSize;
 			double chosenDirection = this.rand.nextDouble();
 
-			if (chosenDirection < chanceOfRight)
+			if (chosenDirection < chanceOfRight) {
 				currentNode.right = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
-			else if (chosenDirection < chanceOfLeft)
+			else if (chosenDirection < chanceOfLeft) {
 				currentNode.left = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
 			else
-				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther, originalSize);
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther, originalSize, depth + 1);
+		}
+	}
+	
+	private void checkDepth(BinaryOperatorTreeNode treeNode, int depth) {
+		
+		if (depth < ExpressionTree.TREE_DEPTH - 1) {
+			if (!(treeNode.left instanceof ConstantTreeNode))
+				checkDepth((BinaryOperatorTreeNode) treeNode.left, depth + 1);
+			
+			if (!(treeNode.right instanceof ConstantTreeNode))
+				checkDepth((BinaryOperatorTreeNode) treeNode.right, depth + 1);
+		}
+		
+		else {
+			// Prune the left node of the current tree
+			if(!(treeNode.left instanceof ConstantTreeNode))	
+				treeNode.left = auxiliaryGenerateConstantTreeNode();
+			
+			// Prune the right side of the current tree
+			if (!(treeNode.right instanceof ConstantTreeNode))
+				treeNode.right = auxiliaryGenerateConstantTreeNode();
 		}
 	}
 
