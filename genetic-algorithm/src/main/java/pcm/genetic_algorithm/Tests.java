@@ -1,7 +1,6 @@
 package pcm.genetic_algorithm;
 
 import abstractsyntaxtree.ExpressionTree;
-import net.objecthunter.exp4j.Expression;
 
 public class Tests {
 
@@ -18,14 +17,11 @@ public class Tests {
 		System.out.println("Tree 2: " + tree2);		
 		System.out.println("Crossed Tree: " + crossed);
 		
-		Expression expression = crossed.getExpression();
-		expression.setVariable("x", 10);
-		expression.setVariable("y", 20);
-		expression.setVariable("z", 30);
-		
-		System.out.println(expression.evaluate());
-		
 		ExpressionTree crossedClone = crossed.clone();
-		System.out.println(crossedClone);
+		System.out.println("Cloned Tree: " + crossedClone);
+		
+		// TODO: Not mutating
+		ExpressionTree mutatedTree = crossedClone.mutate();
+		System.out.println("Mutated Tree: " + mutatedTree);
 	}
 }
