@@ -279,62 +279,62 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 		ExpressionTree result = this.clone();
 		
-		int otherRandomPosition = this.rand.nextInt(other.root.treeSize);
+		int randomIndexOther = this.rand.nextInt(other.root.treeSize);
 		
-		TreeNode otherSubTree = null;
+		TreeNode treeNodeOther = this.findNode(other.root, randomIndexOther);
+				
+		if (this.root.treeSize == 1)
+			result.root = treeNodeOther;
 		
-		if (otherRandomPosition == 0)
-			otherSubTree = other.root;
-			
 		else
-			otherSubTree = otherGetRandomSubTree(other.root, otherRandomPosition);
-
-		startCrossOver(result, otherSubTree);
+			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther);
+		
+		calculateTreeSizes(result.root);
 		
 		return result;
 	}
 
-	private void startCrossOver(ExpressionTree result, TreeNode otherSubTree) {
+	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther) {
 		
-		// If it is a Leaf node then it is chosen
-		if (result.root instanceof ConstantTreeNode)
-			result.root = otherSubTree;
-		
-		else {
-		
-			double probTreeNode = 1.0 / result.root.treeSize;
-			double probEscolhido = this.rand.nextDouble();
+		// If father of two leaf constant tree nodes
+		if ((currentNode.left instanceof ConstantTreeNode) && (currentNode.right instanceof ConstantTreeNode)) {
 			
-			if (probEscolhido < probTreeNode)
-				result.root = otherSubTree;
-				
+			boolean randomSon = this.rand.nextBoolean();
+			
+			// Choose left son
+			if (randomSon)
+				currentNode.left = treeNodeOther;
+			
+			// Choose right son
 			else
-				makeCrossOver((BinaryOperatorTreeNode) result.root, otherSubTree);
+				currentNode.right = treeNodeOther;
 		}
-	}
-	
-	private void makeCrossOver(BinaryOperatorTreeNode resultTreeNode, TreeNode otherSubTree) {
 		
+		// If leaf node is a constant tree node
+		else if (currentNode.left instanceof ConstantTreeNode) {
+			
+			double chanceOfLeft = 1.0 / (currentNode.treeSize - 1);
+			double chosenDirection = this.rand.nextDouble();
+			
+			if (chosenDirection < chanceOfLeft)
+				currentNode.left = treeNodeOther;
+			
+			else
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther);
+		}
 		
-	}
+		// If right node is a constant tree node
+		else {
 
-	private TreeNode otherGetRandomSubTree(TreeNode otherTreeNode, int index) {
-		
-		// If it isn't a leaf node
-		if (!(otherTreeNode instanceof ConstantTreeNode)) {
+			double chanceOfRight = 1.0 / (currentNode.treeSize - 1);
+			double chosenDirection = this.rand.nextDouble();
 			
-			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) otherTreeNode;
+			if (chosenDirection < chanceOfRight)
+				currentNode.right = treeNodeOther;
 			
-			int leftTreeSize = treeNode.left.treeSize;
-			int rightTreeSize = treeNode.right.treeSize;
-			
-			if (index > leftTreeSize) {
-				
-				this.otherGetRandomSubTree(treeNode.right, index - leftTreeSize - 1);
-			}
-		}	
-		
-		return otherTreeNode;
+			else
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther);
+		}
 	}
 
 	/**
@@ -376,7 +376,6 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			return node;
 		
 		else {
-			
 			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) node;
 			
 			int leftSize = treeNode.left.treeSize;

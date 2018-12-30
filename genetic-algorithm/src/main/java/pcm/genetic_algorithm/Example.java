@@ -5,14 +5,18 @@ import abstractsyntaxtree.ExpressionTree;
 public class Example {
 
 	public static void main(String[] args) {
-		String[] vars = new String[4];
-		vars[0] = "Paulo";
-		vars[1] = "Maria";
-		vars[2] = "André";
-		vars[3] = "Mariana";
+		String[] vars = {"x", "y", "z"};
+		
 		ExpressionTree tree = new ExpressionTree(vars);
 		tree.generateTree();
-		System.out.println(tree);
-	}
+		ExpressionTree tree2 = new ExpressionTree(vars);
+		tree2.generateTree();
 
+		System.out.println(tree);
+		System.out.println(tree2);
+		
+		ExpressionTree crossed = tree.crossOverWith(tree2);
+		
+		System.out.println(crossed);
+	}
 }
