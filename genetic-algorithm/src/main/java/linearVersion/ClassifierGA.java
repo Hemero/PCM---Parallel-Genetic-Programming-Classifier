@@ -1,4 +1,4 @@
-package pcm.genetic_algorithm;
+package linearVersion;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

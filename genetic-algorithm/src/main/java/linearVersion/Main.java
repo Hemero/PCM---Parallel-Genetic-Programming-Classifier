@@ -1,4 +1,4 @@
-package pcm.genetic_algorithm;
+package linearVersion;
 
 public class Main {
 	
