@@ -35,9 +35,10 @@ public class LoadData {
 		try (CSVReader reader = new CSVReader(new FileReader(fileName));) {
 			
 			// Ler a primeira linha que correspondem as variaveis
-			this.variables = reader.readNext()[0].split(";");
-						
-			String[] linha;
+			String[] linha = reader.readNext()[0].split(";");
+			
+			this.variables = new String[linha.length - 1];
+			System.arraycopy(linha, 0, this.variables, 0, linha.length - 1);
 			
 			while((linha = reader.readNext()) != null) {
 				
