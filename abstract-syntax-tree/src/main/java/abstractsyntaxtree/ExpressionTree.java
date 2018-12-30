@@ -43,11 +43,6 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 			return new ConstantTreeNode(constant);
 		}
-		
-		public String toString() {
-			
-			return constant;
-		}
 	}
 
 	/**
@@ -75,11 +70,6 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			
 			return result;
 		}	
-		
-		public String toString() {
-			
-			return operator.toString();
-		}
 	}
 
 	// Constants
@@ -93,6 +83,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	private TreeNode root;
 	
 	private Random rand;
+	
 	private int fitness;
 	private String[] variables;
 
@@ -111,6 +102,9 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		rand = new Random();
 	}
 
+	// ########################################################################
+	// ############################ Tree Generation ###########################
+	
 	/**
 	 * @see ExpressionTreeInterface#generateTree()
 	 */
@@ -271,6 +265,9 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		}
 	}
 	
+	// ########################################################################
+	// ############################### CrossOver ##############################
+	
 	/**
 	 * @see ExpressionTreeInterface#crossOver(ExpressionTree)
 	 */
@@ -337,6 +334,9 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		}
 	}
 
+	// ########################################################################
+	// ################################ Mutation ##############################
+	
 	/**
 	 * @see ExpressionTreeInterface#mutate()
 	 */
@@ -390,6 +390,9 @@ public class ExpressionTree implements ExpressionTreeInterface {
 				return node;
 		}
 	}
+	
+	// ########################################################################
+	// ############################ Get/Set Fitness ###########################
 	
 	@Override
 	public void setFitness(double fitness) {

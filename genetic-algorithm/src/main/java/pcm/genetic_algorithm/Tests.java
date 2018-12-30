@@ -2,9 +2,10 @@ package pcm.genetic_algorithm;
 
 import abstractsyntaxtree.ExpressionTree;
 
-public class Example {
+public class Tests {
 
 	public static void main(String[] args) {
+		
 		String[] vars = {"x", "y", "z"};
 		
 		ExpressionTree tree = new ExpressionTree(vars);
