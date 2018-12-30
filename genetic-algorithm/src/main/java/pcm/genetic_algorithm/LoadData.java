@@ -2,9 +2,10 @@ package pcm.genetic_algorithm;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 import com.opencsv.CSVReader;
 
@@ -27,104 +28,53 @@ public class LoadData {
 	 */
 	public LoadData(String fileName) {
 
+		List<Double[]> dataTemp = new ArrayList<>();
+		List<Double> dataOutputTemp = new ArrayList<>();
+		List<Double> classesTemp = new ArrayList<>();
+		
 		try (CSVReader reader = new CSVReader(new FileReader(fileName));) {
 			
-			// Obter todas as linhas
-			List<String[]> entries = reader.readAll();
+			// Ler a primeira linha que correspondem as variaveis
+			this.variables = reader.readNext()[0].split(";");
+						
+			String[] linha;
 			
-			double[][] dadosTotaisFormatados = formatarEntradas(entries);
+			while((linha = reader.readNext()) != null) {
+				
+				linha = linha[0].split(";");
+				
+				// ------------------ Adicionar ao data ------------------ 
+				Double[] dataSemClasses = new Double[linha.length - 1];
+				
+				for (int i = 0; i < dataSemClasses.length; i++)
+					dataSemClasses[i] = Double.valueOf(linha[i]);
+				
+				dataTemp.add(dataSemClasses);
+				
+				// ------------------ Adicionar ao dataOutput ------------------ 
+				double classeDaLinha = Double.parseDouble(linha[linha.length - 1]);
+				
+				dataOutputTemp.add(classeDaLinha);
+				
+				// ------------------ Adicionar as classes ------------------ 
+				if (!classesTemp.contains(classeDaLinha))
+					classesTemp.add(classeDaLinha);
+			}
 			
-			// Quantidade de colunas e de linhas
-			int qtdColunas = dadosTotaisFormatados[0].length;
-			int qtdLinhas = dadosTotaisFormatados.length;
+			this.data = new double[dataTemp.size()][dataTemp.get(0).length];
 			
-			this.data = getData(dadosTotaisFormatados, qtdLinhas, qtdColunas);
-			this.dataOutput = getDataOutput(dadosTotaisFormatados, qtdLinhas, qtdColunas);
-			this.classes = getClasses(dadosTotaisFormatados, qtdColunas, qtdLinhas);
-			this.variables = getVariables(entries, qtdColunas);
+			for (int i = 0; i < this.data.length; i++)
+				this.data[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
 			
-		} catch (IOException e) {
+			this.dataOutput = dataOutputTemp.stream().mapToDouble(i -> i).toArray();
+			this.classes = classesTemp.stream().mapToDouble(i -> i).toArray();
+		} 
+		
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 	
-	private double[][] formatarEntradas(List<String[]> entries) {
-		
-		// Quantidade de colunas e de linhas
-		int qtdColunas = entries.get(0)[0].split(";").length;
-		int qtdLinhas = entries.size() - 1;
-		
-		double[][] resultado = new double[qtdLinhas][qtdColunas];
-		
-		for (int i = 1; i < qtdLinhas; i++) {
-			
-			String[] temp = entries.get(i)[0].split(";");
-			
-			for (int j = 0; j < qtdColunas; j++)
-				resultado[i][j] = Double.parseDouble(temp[j]);
-		}
-		
-		return resultado;
-	}
-
-
-	private double[] getClasses(double[][] dadosTotaisFormatados, int qtdColunas, int qtdLinhas) {
-		
-		List<Double> classesTemp = new ArrayList<>();
-		
-		Double classe;
-		
-		for (int i = 1; i < qtdLinhas; i++) {
-			
-			classe = dadosTotaisFormatados[i][qtdColunas - 1];
-			
-			if (!classesTemp.contains(classe))
-				classesTemp.add(classe);
-		}
-		
-		
-		double[] resultado = new double[classesTemp.size()];
-		
-		for (int i = 0; i < resultado.length; i++)
-			resultado[i] = classesTemp.get(i);
-		
-		return resultado;
-	}
-
-
-	private String[] getVariables(List<String[]> entries, int qtdColunas) {
-	
-		String[] resultado = new String[qtdColunas - 1];
-		
-		System.arraycopy(entries.get(0)[0].split(";"), 0, resultado, 0, qtdColunas - 1);
-								
-		return resultado;
-	}
-
-	private double[] getDataOutput(double[][] dadosTotaisFormatados, int qtdLinhas, int qtdColunas) {
-		
-		double[] resultado = new double[qtdLinhas - 1];
-		
-		// populate output
-		for (int i = 1; i < qtdLinhas - 1; i++)
-			resultado[i] = dadosTotaisFormatados[i][qtdColunas - 1];
-		
-		return resultado;
-	}
-
-	private double[][] getData(double[][] dadosTotaisFormatados, int qtdLinhas, int qtdColunas) {
-
-		double[][] resultado = new double[qtdLinhas - 1][qtdColunas - 1];
-		
-		// populate data
-		for (int i = 1; i < qtdLinhas; i++)
-			for (int j = 0; j < (qtdColunas - 1); j++)
-				resultado[i - 1][j] = dadosTotaisFormatados[i][j];
-		
-		return resultado;
-	}
-
 	// Getters
 	public double[] getDataOutput() {
 		return dataOutput;
