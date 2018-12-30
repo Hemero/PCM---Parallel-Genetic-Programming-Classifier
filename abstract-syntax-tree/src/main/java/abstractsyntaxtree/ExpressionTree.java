@@ -100,16 +100,16 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		CONST_VAR_GEN = 1.0 / variables.length;
 		
 		rand = new Random();
+		this.generateTree();
 	}
 
 	// ########################################################################
 	// ############################ Tree Generation ###########################
 	
 	/**
-	 * @see ExpressionTreeInterface#generateTree()
+	 * Randomly generates this expression tree
 	 */
-	@Override
-	public void generateTree() {
+	private void generateTree() {
 		
 		generateRoot(0);
 		calculateTreeSizes(this.root);
@@ -123,7 +123,6 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		
 		// If it is a Binary Operator Node
 		else {
-			
 			BinaryOperatorTreeNode binaryTreeNode = (BinaryOperatorTreeNode) current;
 			
 			current.treeSize = calculateTreeSizes(binaryTreeNode.left) + 

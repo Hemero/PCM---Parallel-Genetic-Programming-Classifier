@@ -3,7 +3,7 @@
 ## Problema
 Write a parallel classifier for Machine Learning workloads that uses Genetic Programming. Genetic programming is a subset of Genetic Algorithms that uses ASTs to represent programs:
 
-(x+1) * 10 + 3 - y would be an expression that would translate features x and y into a classification (closer to 0 is classA, closer to 1 is classB). 
+(x+1) * 10 + 3 - y would be an expression that would translate features x and y into a classification (closer to 0 is classA, closer to 1 is classB).
 
 Evaluate your solution in both performance and time against state of the art approaches.
 
@@ -32,8 +32,9 @@ You should include your paper and any source code used or developed (including b
 
 [4] [Dynamic Island Model based on Spectral Clustering in Genetic Algorithm](https://arxiv.org/pdf/1801.01620.pdf)
 
+[5] [Comparison of Performance between Different Selection Strategies on Simple Genetic Algorithms](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.140.3747&rep=rep1&type=pdf)
 
 ### Recursos de Programação
-[5] [exp4j - Expression Builder from String (Java)](https://www.objecthunter.net/exp4j/index.html)
+[6] [exp4j - Expression Builder from String (Java)](https://www.objecthunter.net/exp4j/index.html)
 
-[6] [exprtk - C++ Mathematical Expression Library](http://www.partow.net/programming/exprtk/)
+[7] [exprtk - C++ Mathematical Expression Library](http://www.partow.net/programming/exprtk/)

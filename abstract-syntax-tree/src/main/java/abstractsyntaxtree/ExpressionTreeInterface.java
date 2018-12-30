@@ -6,11 +6,6 @@ import net.objecthunter.exp4j.Expression;
  * Represents an expression tree interface
  */
 public interface ExpressionTreeInterface extends Comparable<ExpressionTreeInterface> {
-
-	/**
-	 * Randomly generates this expression tree
-	 */
-	public void generateTree();
 	
 	/**
 	 * Given an expression tree, crossovers with the current tree.
