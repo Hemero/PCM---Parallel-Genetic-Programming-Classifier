@@ -360,19 +360,30 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 		ExpressionTree result = this.clone();
 		
-		int mutationPoint = rand.nextInt(this.root.treeSize);
+		int mutationPoint = rand.nextInt(result.root.treeSize);
 		
-		TreeNode nodeToMutate = findNode(this.root, mutationPoint);
+		TreeNode nodeToMutate = findNode(result.root, mutationPoint);
 		
 		if (nodeToMutate != null) {
 			
 			// generate a binary op node
 			if (nodeToMutate instanceof BinaryOperatorTreeNode) {
+				BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) nodeToMutate;
+				treeNode.operator = ExpressionBinaryOperator.randomBinaryOperator();	
+			} 
+			
+			else {	
+				ConstantTreeNode treeNode = (ConstantTreeNode) nodeToMutate;
 				
-				nodeToMutate = new BinaryOperatorTreeNode(ExpressionBinaryOperator.randomBinaryOperator());
-			} else {
-				
-				nodeToMutate = auxiliaryGenerateConstantTreeNode();
+				// if not generate a constant
+				double prob = rand.nextDouble();
+
+				if (prob < constVarGen)
+					// root will be one of the variable names
+					treeNode.constant = generateVariableName();
+				else 
+					// root will be an int
+					treeNode.constant = generateValue();
 			}
 		}
 		
