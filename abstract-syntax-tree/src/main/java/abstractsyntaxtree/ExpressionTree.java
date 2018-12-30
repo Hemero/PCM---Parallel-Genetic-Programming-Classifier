@@ -75,7 +75,6 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	// Constants
 	private static final int TREE_DEPTH = 10;
 	private static final double CONST_NODE_GEN = 0.5;
-	private static double CONST_VAR_GEN;
 	
 	private static final int UPPER_BOUND = Integer.MAX_VALUE;
 
@@ -85,6 +84,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	private Random rand;
 	
 	private double fitness;
+	private double constVarGen;
 	private String[] variables;
 
 	/**
@@ -97,10 +97,19 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		this.root = null;
 
 		this.variables = variables;
-		CONST_VAR_GEN = 1.0 / variables.length;
+		constVarGen = 1.0 / variables.length;
 		
-		rand = new Random();
+		this.rand = new Random();
 		this.generateTree();
+	}
+	
+	/**
+	 * Private constructor for clone
+	 */
+	private ExpressionTree() {
+		
+		this.root = null;
+		this.rand = new Random();
 	}
 
 	// ########################################################################
@@ -220,7 +229,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		// if not generate a constant
 		double prob = rand.nextDouble();
 
-		if (prob < CONST_VAR_GEN) {
+		if (prob < constVarGen) {
 			// root will be one of the variable names
 			node = new ConstantTreeNode(generateVariableName());
 		} else {
@@ -477,8 +486,11 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	@Override
 	public ExpressionTree clone() {
 
-		ExpressionTree result = new ExpressionTree(this.variables);
-
+		ExpressionTree result = new ExpressionTree();
+		result.variables = this.variables.clone();
+		result.constVarGen = this.constVarGen;
+		result.fitness = this.fitness;
+		
 		if (this.root != null) {
 
 			result.root = this.root.clone();

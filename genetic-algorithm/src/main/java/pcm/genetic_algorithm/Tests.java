@@ -24,5 +24,8 @@ public class Tests {
 		expression.setVariable("z", 30);
 		
 		System.out.println(expression.evaluate());
+		
+		ExpressionTree crossedClone = crossed.clone();
+		System.out.println(crossedClone);
 	}
 }
