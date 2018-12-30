@@ -75,7 +75,7 @@ public class ClassifierGA {
 
 	private void measureFitness() {
 		
-		for (int i=0; i<AMOUNT_POPULATION; i++) {
+		for (int i = 0; i < AMOUNT_POPULATION; i++) {
 			measureExpression(population[i]);
 		}
 	}
@@ -111,7 +111,7 @@ public class ClassifierGA {
 	
 	private void setVariablesExpression(int row, Expression express) {
 
-		for (int col = 0; col < (data[row].length-1); col++) {
+		for (int col = 0; col < data[row].length; col++) {
 			express.setVariable(variables[col], data[row][col]);
 		}
 	}
@@ -129,7 +129,7 @@ public class ClassifierGA {
 		 * These elites have the best genes so they carry their genes to the following generations.
 		 * Too many elites can cause the population to degenerate.
 		 */		
-		for (int i = TOP_AMOUNT_ELITES; i < this.population.length; i++) {
+		for (int i = TOP_AMOUNT_ELITES; i < AMOUNT_POPULATION; i++) {
 
 			// The first elements in the population have higher probability of being selected
 			int parent1 = (int) (- Math.log(random.nextDouble()) * AMOUNT_POPULATION) % AMOUNT_POPULATION;
@@ -140,6 +140,12 @@ public class ClassifierGA {
 	}
 
 	private void applyMutations(ExpressionTree[] newPopulation) {
-		// TODO:		
+		
+		for (int i = TOP_AMOUNT_ELITES; i < AMOUNT_POPULATION; i++) {
+			
+			if (random.nextDouble() < MUTATION_RATE) {
+				newPopulation[i].mutate();
+			}
+		}
 	}
 }
