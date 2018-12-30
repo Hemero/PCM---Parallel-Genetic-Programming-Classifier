@@ -9,9 +9,7 @@ public class Tests {
 		String[] vars = {"x", "y", "z"};
 		
 		ExpressionTree tree = new ExpressionTree(vars);
-		tree.generateTree();
 		ExpressionTree tree2 = new ExpressionTree(vars);
-		tree2.generateTree();
 
 		ExpressionTree crossed = tree.crossOverWith(tree2);
 		
