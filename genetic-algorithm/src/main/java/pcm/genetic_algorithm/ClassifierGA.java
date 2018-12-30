@@ -32,12 +32,11 @@ public class ClassifierGA {
 		this.random = new Random();
 		this.population = new ExpressionTree[AMOUNT_POPULATION];
 		
-		// Gerar a populacao inicial
-		generatePopulation(population);
+		// 0. Gerar a populacao inicial
+		generatePopulation();
 	}
 	
 	public void startClassification() {
-		
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 			
 			// 1. Calcular o Fitness
@@ -70,33 +69,12 @@ public class ClassifierGA {
 			
 			this.population = newPopulation;
 		}
-		
-		variables = new String[] {"x", "y", "z"};
-
-		ExpressionTree tree = new ExpressionTree(variables);
-
-		ExpressionTree tree2 = tree.clone();
-
-		System.out.println(tree);
-		System.out.println(tree2);
-
-		Expression express = tree.getExpression();
-		express.setVariable("x", 1.0);
-		express.setVariable("y", 1.0);
-		express.setVariable("z", 1.0);
-
-		//		System.out.println(express.evaluate());
-
-		data = new double[][] {{0.2,0.3,0.3,0.2},{5.6,0.124,2348.3,5.6},{123.0,124.223,12.3214,123.0}};
-
-		double fitness = measureFitness(express);
-		
-		tree.setFitness(fitness);
-		System.out.println(fitness);
 	}
 
-	private void generatePopulation(ExpressionTree[] population) {
-		// TODO 	
+	private void generatePopulation() {
+		
+		for (int i = 0; i < AMOUNT_POPULATION; i++)
+			this.population[i] = new ExpressionTree(variables);
 	}
 
 	private double measureFitness(Expression express) {

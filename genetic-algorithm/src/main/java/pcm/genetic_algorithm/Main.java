@@ -8,9 +8,17 @@ public class Main {
 		// load data
 		// Start classifierGA
 		// run classifierGA
+		LoadData loadData = loadData("../students/StudentsPerformance.csv");
+		
+		double[][] data = loadData.getData();
+		double[] classes = loadData.getClasses();
+		double[] dataOutput = loadData.getDataOutput();
+		
+		String[] variables = loadData.getVariables();
 	}
 
-	private void loadData(String fileName) {
-		// TODO
+	private static LoadData loadData(String fileName) {
+		
+		return new LoadData(fileName);
 	}
 }
