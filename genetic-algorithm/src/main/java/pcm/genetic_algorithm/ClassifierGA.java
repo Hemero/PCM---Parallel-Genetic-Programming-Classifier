@@ -74,11 +74,15 @@ public class ClassifierGA {
 	}
 
 	private void measureFitness() {
-		// TODO:
+		
+		for (int i=0; i<AMOUNT_POPULATION; i++) {
+			measureExpression(population[i]);
+		}
 	}
 	
-	private double measureExpression(Expression express) {
+	private double measureExpression(ExpressionTree tree) {
 
+		Expression express = tree.getExpression();
 		int correctlyClassified = 0;
 
 		for (int row = 0; row < data.length; row++) {
@@ -88,8 +92,8 @@ public class ClassifierGA {
 			try {
 				double expressionEvaluation = express.evaluate();
 				
-				if ((expressionEvaluation < THRESHOLD && data[row][data[0].length-1] < THRESHOLD) || 
-					(expressionEvaluation >= THRESHOLD && data[row][data[0].length-1] >= THRESHOLD)) {
+				if ((expressionEvaluation < THRESHOLD && dataOutput[row] == classes[0]) || 
+					(expressionEvaluation >= THRESHOLD && dataOutput[row] == classes[1])) {
 
 					correctlyClassified++;
 				}
@@ -97,8 +101,12 @@ public class ClassifierGA {
 				// Do nothing - counts as incorrectly classified
 			}
 		}
-
-		return 1.0*correctlyClassified / data.length;
+		
+		double fitness = 1.0*correctlyClassified / data.length;
+		
+		tree.setFitness(fitness);
+		
+		return fitness;
 	}
 	
 	private void setVariablesExpression(int row, Expression express) {
@@ -119,7 +127,7 @@ public class ClassifierGA {
 		 * 
 		 * Also, a small portion of the population should be elites and not suffer any crossOvers/Mutations
 		 * These elites have the best genes so they carry their genes to the following generations.
-		 * To many elites can cause the population to degenerate.
+		 * Too many elites can cause the population to degenerate.
 		 */		
 		for (int i = TOP_AMOUNT_ELITES; i < this.population.length; i++) {
 
