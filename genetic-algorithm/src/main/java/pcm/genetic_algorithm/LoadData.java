@@ -47,7 +47,7 @@ public class LoadData {
 				Double[] dataSemClasses = new Double[linha.length - 1];
 				
 				for (int i = 0; i < dataSemClasses.length; i++)
-					dataSemClasses[i] = Double.valueOf(linha[i]);
+					dataSemClasses[i] = Double.parseDouble(linha[i]);
 				
 				dataTemp.add(dataSemClasses);
 				
