@@ -76,7 +76,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	private static final int TREE_DEPTH = 10;
 	private static final double CONST_NODE_GEN = 0.5;
 	
-	private static final int UPPER_BOUND = Integer.MAX_VALUE;
+	private static final int UPPER_BOUND = 100;
 
 	// ExpressionTree Attributes
 	private TreeNode root;
@@ -550,10 +550,10 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		
 		int resultado = 0;
 		
-		if (this.fitness < other.getFitness())
+		if (this.fitness > other.getFitness())
 			resultado = -1;
 		
-		else if (this.fitness > other.getFitness())
+		else if (this.fitness < other.getFitness())
 			resultado = 1;
 		
 		return resultado;
