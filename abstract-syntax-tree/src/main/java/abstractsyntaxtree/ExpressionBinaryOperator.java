@@ -3,7 +3,7 @@ package abstractsyntaxtree;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This enum contains binary operators
@@ -24,7 +24,7 @@ public enum ExpressionBinaryOperator {
 	private static final List<ExpressionBinaryOperator> VALUES =
 			Collections.unmodifiableList(Arrays.asList(values()));
 	private static final int SIZE = VALUES.size();
-	private static final Random RANDOM = new Random();
+	private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
 	/**
 	 * Constructor of the binary operator

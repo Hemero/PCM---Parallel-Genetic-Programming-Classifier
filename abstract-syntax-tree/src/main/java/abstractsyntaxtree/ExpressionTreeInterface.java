@@ -5,7 +5,7 @@ import net.objecthunter.exp4j.Expression;
 /**
  * Represents an expression tree interface
  */
-public interface ExpressionTreeInterface extends Comparable<ExpressionTreeInterface> {
+public interface ExpressionTreeInterface extends Comparable<ExpressionTreeInterface>, Cloneable {
 	
 	/**
 	 * Given an expression tree, crossovers with the current tree.
