@@ -20,7 +20,6 @@ public class Tests {
 		ExpressionTree crossedClone = crossed.clone();
 		System.out.println("Cloned Tree: " + crossedClone);
 		
-		// TODO: Not mutating
 		ExpressionTree mutatedTree = crossedClone.mutate();
 		System.out.println("Mutated Tree: " + mutatedTree);
 	}

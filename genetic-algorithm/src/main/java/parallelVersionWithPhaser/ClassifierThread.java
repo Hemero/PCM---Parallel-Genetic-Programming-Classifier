@@ -1,83 +1,123 @@
-package linearVersion;
+package parallelVersionWithPhaser;
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.ThreadLocalRandom;
 
 import abstractsyntaxtree.ExpressionTree;
 import net.objecthunter.exp4j.Expression;
+import utils.ParallelMergeSort;
 
-public class ClassifierGA {
+public class ClassifierThread extends Thread {
 
 	// Constantes
 	private static final double THRESHOLD = 0;
+	private static final int TOP_AMOUNT_ELITES = 1;
 	private static final int AMOUNT_ITERATIONS = 1000;
 	private static final int AMOUNT_POPULATION = 1000;
-	private static final int TOP_AMOUNT_ELITES = 1;
 	
 	private static final double MUTATION_RATE = 0.1;
 	
 	// Atributos
+	private int threadId;
+	private int lowLimit;
+	private int highLimit;
+	
 	private double[][] data;
 	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
 	
-	private Random random;
+	private Phaser phaser;
+	private ThreadLocalRandom random;
 	private ExpressionTree[] population;
-	
-	public ClassifierGA(double[][] data, double[] classes, double[] dataOutput, String[] variables) {
+
+	public ClassifierThread(int threadId, int lowLimit, int highLimit,
+							double[][] data, double[] dataOutput, 
+							double[] classes, String[] variables, 
+							ExpressionTree[] population, Phaser phaser) {
+		
+		this.threadId = threadId;
+		this.lowLimit = lowLimit;
+		this.highLimit = highLimit;
 		
 		this.data = data;
 		this.classes = classes;
 		this.dataOutput = dataOutput;
 		this.variables = variables;
 		
-		this.random = new Random();
-		this.population = new ExpressionTree[AMOUNT_POPULATION];
-		
-		// 0. Gerar a populacao inicial
-		generatePopulation();
+		this.phaser = phaser;
+		this.population = population;
+		this.random = ThreadLocalRandom.current();
+	
+		this.phaser.register();
 	}
 	
-	public void startClassification() {
+	@Override
+	public void run() {
+
+		// 0. Gerar a populacao inicial
+		generatePopulation();
+		
+		// Wait for everyone to generate their population
+		this.phaser.arriveAndAwaitAdvance();
+		
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
+
+			this.phaser.arriveAndAwaitAdvance();
 			
 			// 1. Calcular o Fitness
 			measureFitness();
 			
+			// Await for everyone to do the operations
+			this.phaser.arriveAndAwaitAdvance();
+			
 			// 2. Sort das arvores por ordem descendente
-			Arrays.sort(this.population);
-
-			System.out.println("Best individual at generation " + geracao + ": " + this.population[0] + " with fitness " + this.population[0].getFitness());
+			if (this.threadId == 0)
+				sortPopulation();
+			
+			// Await for array to be sorted
+			this.phaser.arriveAndAwaitAdvance();
+			
+			if (threadId == 0)
+				System.out.println("Best individual at generation " + geracao + ": " + this.population[0] + " with fitness " + this.population[0].getFitness());
 			
 			// Create the new population
 			ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 			
 			// 2.5 Copy the TOP_AMOUNT_ELITES to the new population
-			for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
-				newPopulation[i] = this.population[i];
+			if (threadId == 0)
+				for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
+					newPopulation[i] = this.population[i];
+
+			this.phaser.arriveAndAwaitAdvance();
 			
 			// 3. CrossOver
 			applyCrossOvers(newPopulation);
-			
+
+			this.phaser.arriveAndAwaitAdvance();
 			// 4. Mutacao
 			applyMutations(newPopulation);
 			
-			this.population = newPopulation;
+			// Await for everyone to do the transition from population to newPopulation
+			this.phaser.arriveAndAwaitAdvance();
+
+			for (int i = this.lowLimit; i < this.highLimit; i++)
+				this.population[i] = newPopulation[i];
+			
+			this.phaser.arriveAndAwaitAdvance();
 		}
 	}
 
 	private void generatePopulation() {
 		
-		for (int i = 0; i < AMOUNT_POPULATION; i++)
+		for (int i = this.lowLimit; i < this.highLimit; i++)
 			this.population[i] = new ExpressionTree(variables);
 	}
 
 	private void measureFitness() {
 		
-		for (int i = 0; i < AMOUNT_POPULATION; i++) {
+		for (int i = this.lowLimit; i < this.highLimit; i++)
 			measureExpression(population[i]);
-		}
 	}
 	
 	private double measureExpression(ExpressionTree tree) {
@@ -102,18 +142,23 @@ public class ClassifierGA {
 			}
 		}
 		
-		double fitness = 1.0*correctlyClassified / data.length;
+		double fitness = 1.0 * correctlyClassified / data.length;
 		
 		tree.setFitness(fitness);
 		
 		return fitness;
 	}
-	
+
 	private void setVariablesExpression(int row, Expression express) {
 
-		for (int col = 0; col < data[row].length; col++) {
+		for (int col = 0; col < data[row].length; col++)
 			express.setVariable(variables[col], data[row][col]);
-		}
+	}
+	
+	private void sortPopulation() {
+		
+		ParallelMergeSort mergeSort = new ParallelMergeSort(0, this.population.length, population);
+		mergeSort.compute();
 	}
 
 	private void applyCrossOvers(ExpressionTree[] newPopulation) {
@@ -129,7 +174,7 @@ public class ClassifierGA {
 		 * These elites have the best genes so they carry their genes to the following generations.
 		 * Too many elites can cause the population to degenerate.
 		 */		
-		for (int i = TOP_AMOUNT_ELITES; i < AMOUNT_POPULATION; i++) {
+		for (int i = Math.max(TOP_AMOUNT_ELITES, this.lowLimit); i < this.highLimit; i++) {
 
 			// The first elements in the population have higher probability of being selected
 			int parent1 = (int) (- Math.log(random.nextDouble()) * AMOUNT_POPULATION) % AMOUNT_POPULATION;
@@ -141,11 +186,8 @@ public class ClassifierGA {
 
 	private void applyMutations(ExpressionTree[] newPopulation) {
 		
-		for (int i = TOP_AMOUNT_ELITES; i < AMOUNT_POPULATION; i++) {
-			
-			if (random.nextDouble() < MUTATION_RATE) {
+		for (int i = Math.max(TOP_AMOUNT_ELITES, this.lowLimit); i < this.highLimit; i++) 
+			if (random.nextDouble() < MUTATION_RATE) 
 				newPopulation[i].mutate();
-			}
-		}
 	}
 }
