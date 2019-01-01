@@ -88,13 +88,10 @@ public class ClassifierThread extends Thread {
 			if (threadId == 0)
 				for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
 					newPopulation[i] = this.population[i];
-
-			this.phaser.arriveAndAwaitAdvance();
 			
 			// 3. CrossOver
 			applyCrossOvers(newPopulation);
 
-			this.phaser.arriveAndAwaitAdvance();
 			// 4. Mutacao
 			applyMutations(newPopulation);
 			
@@ -103,8 +100,6 @@ public class ClassifierThread extends Thread {
 
 			for (int i = this.lowLimit; i < this.highLimit; i++)
 				this.population[i] = newPopulation[i];
-			
-			this.phaser.arriveAndAwaitAdvance();
 		}
 	}
 
