@@ -284,6 +284,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 		ExpressionTree result = this.clone();
 		
+		calculateTreeSizes(result.root);
+		
 		int randomIndexOther = this.rand.nextInt(other.root.treeSize);
 		TreeNode treeNodeOther = this.findNode(other.root, randomIndexOther);
 
@@ -429,8 +431,12 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 */
 	private TreeNode findNode(TreeNode node, int indice) {
 				
-		if (node instanceof ConstantTreeNode)
-			return node;
+		if (node instanceof ConstantTreeNode) {
+		
+			ConstantTreeNode resultado = (ConstantTreeNode) node.clone();
+			resultado.treeSize = 1;
+			return resultado;
+		}
 		
 		else {
 			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) node;
@@ -443,8 +449,12 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			else if (indice > leftSize)
 				return findNode(treeNode.right, indice - leftSize - 1);
 			
-			else 
-				return node;
+			else {
+			
+				BinaryOperatorTreeNode resultado = treeNode.clone();
+				this.auxiliaryClone(resultado, treeNode);
+				return resultado;
+			}
 		}
 	}
 	
