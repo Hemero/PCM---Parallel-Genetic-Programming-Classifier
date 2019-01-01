@@ -48,8 +48,6 @@ public class ClassifierThread extends Thread {
 		this.phaser = phaser;
 		this.population = population;
 		this.random = ThreadLocalRandom.current();
-	
-		this.phaser.register();
 	}
 	
 	@Override
@@ -63,8 +61,6 @@ public class ClassifierThread extends Thread {
 		
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 
-			this.phaser.arriveAndAwaitAdvance();
-			
 			// 1. Calcular o Fitness
 			measureFitness();
 			
@@ -95,8 +91,7 @@ public class ClassifierThread extends Thread {
 			// 4. Mutacao
 			applyMutations(newPopulation);
 			
-			// Await for everyone to do the transition from population to newPopulation
-			this.phaser.arriveAndAwaitAdvance();
+			// Transition from population to newPopulation
 
 			for (int i = this.lowLimit; i < this.highLimit; i++)
 				this.population[i] = newPopulation[i];

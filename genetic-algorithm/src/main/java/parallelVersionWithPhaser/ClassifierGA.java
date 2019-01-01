@@ -1,7 +1,5 @@
 package parallelVersionWithPhaser;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Phaser;
 
 import abstractsyntaxtree.ExpressionTree;
@@ -35,8 +33,7 @@ public class ClassifierGA {
 		int high = -1;
 		int workPerThread = AMOUNT_POPULATION / AMOUNT_THREADS;
 		
-		// ExecutorService executorService = Executors.newCachedThreadPool();
-		Phaser phaser = new Phaser();
+		Phaser phaser = new Phaser(AMOUNT_THREADS);
 		
 		for (int threadId = 0; threadId < classifiers.length; threadId++) {
 			
@@ -48,11 +45,9 @@ public class ClassifierGA {
 			
 			classifiers[threadId] = new ClassifierThread(threadId, low, high, 
 							data, dataOutput, classes, variables, population, phaser);
+			classifiers[threadId].start();
 		}
-		
-		for (ClassifierThread classifierThread : classifiers)
-			classifierThread.start();
-		
+				
 		for (ClassifierThread classifierThread : classifiers)
 			try {
 				classifierThread.join();
@@ -60,7 +55,6 @@ public class ClassifierGA {
 				classifierThread.interrupt();
 				e.printStackTrace();
 			}
-		// phaser.arriveAndAwaitAdvance();
 		
 		System.out.println("Classification has terminated.");
 	}
