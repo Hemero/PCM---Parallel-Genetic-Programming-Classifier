@@ -34,10 +34,10 @@ public class ClassifierGA {
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 
 			// 1. Calcular o Fitness
-			MeasureFitness measureFitnessAction = 
+			MeasureFitness measureFitness = 
 					new MeasureFitness(population, data, dataOutput, classes, 
 							variables, 0, AMOUNT_POPULATION);
-			measureFitnessAction.compute();
+			measureFitness.compute();
 
 			// 2. Sort das arvores por ordem descendente
 			ParallelMergeSort sort = new ParallelMergeSort(0, AMOUNT_POPULATION, population);
@@ -55,12 +55,12 @@ public class ClassifierGA {
 
 			// 3. CrossOver
 			ApplyCrossOver applyCrossOver = 
-					new ApplyCrossOver(population, newPopulation, variables, TOP_AMOUNT_ELITES-1, AMOUNT_POPULATION);
+					new ApplyCrossOver(population, newPopulation, variables, TOP_AMOUNT_ELITES, AMOUNT_POPULATION);
 			applyCrossOver.compute();
 			
 			// 4. Mutacao
 			ApplyMutation applyMutation = 
-					new ApplyMutation(population, newPopulation, variables, TOP_AMOUNT_ELITES-1, AMOUNT_POPULATION);
+					new ApplyMutation(population, newPopulation, variables, TOP_AMOUNT_ELITES, AMOUNT_POPULATION);
 			applyMutation.compute();
 
 			this.population = newPopulation;

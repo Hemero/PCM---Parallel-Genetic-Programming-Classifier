@@ -38,9 +38,11 @@ public class MeasureFitness extends RecursiveAction {
 			
 			for (int i = beg; i < end; i++) {
 				
-				MeasureExpression measureExpression =
-					new MeasureExpression(population[i], data, dataOutput, classes, variables, 0, this.data.length);
-				measureExpression.compute();
+				measureExpression(population[i]);
+				
+//				MeasureExpression measureExpression =
+//					new MeasureExpression(population[i], data, dataOutput, classes, variables, 0, this.data.length);
+//				measureExpression.compute();
 			}
 		} else {
 
@@ -59,6 +61,42 @@ public class MeasureFitness extends RecursiveAction {
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private double measureExpression(ExpressionTree tree) {
+
+		Expression express = tree.getExpression();
+		int correctlyClassified = 0;
+
+		for (int row = 0; row < data.length; row++) {
+
+			setVariablesExpression(row, express);	
+
+			try {
+				double expressionEvaluation = express.evaluate();
+				
+				if ((expressionEvaluation < THRESHOLD && dataOutput[row] == classes[0]) || 
+					(expressionEvaluation >= THRESHOLD && dataOutput[row] == classes[1])) {
+
+					correctlyClassified++;
+				}
+			} catch (ArithmeticException ae) {
+				// Do nothing - counts as incorrectly classified
+			}
+		}
+		
+		double fitness = 1.0*correctlyClassified / data.length;
+		
+		tree.setFitness(fitness);
+		
+		return fitness;
+	}
+	
+	private void setVariablesExpression(int row, Expression express) {
+
+		for (int col = 0; col < data[row].length; col++) {
+			express.setVariable(variables[col], data[row][col]);
 		}
 	}
 
