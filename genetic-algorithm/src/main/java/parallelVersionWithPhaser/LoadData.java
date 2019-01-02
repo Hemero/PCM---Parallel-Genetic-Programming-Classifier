@@ -1,4 +1,4 @@
-package pcm.genetic_algorithm;
+package parallelVersionWithPhaser;
 
 import java.io.FileReader;
 import java.io.IOException;

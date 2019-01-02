@@ -1,6 +1,6 @@
 package abstractsyntaxtree;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -81,7 +81,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	// ExpressionTree Attributes
 	private TreeNode root;
 	
-	private Random rand;
+	private ThreadLocalRandom rand;
 	
 	private double fitness;
 	private double constVarGen;
@@ -99,7 +99,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		this.variables = variables;
 		constVarGen = 1.0 / variables.length;
 		
-		this.rand = new Random();
+		this.rand = ThreadLocalRandom.current();
 		this.generateTree();
 	}
 	
@@ -109,7 +109,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	private ExpressionTree() {
 		
 		this.root = null;
-		this.rand = new Random();
+		this.rand = ThreadLocalRandom.current();
 	}
 
 	// ########################################################################
@@ -284,6 +284,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 		ExpressionTree result = this.clone();
 		
+		calculateTreeSizes(result.root);
+		
 		int randomIndexOther = this.rand.nextInt(other.root.treeSize);
 		TreeNode treeNodeOther = this.findNode(other.root, randomIndexOther);
 
@@ -291,14 +293,14 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			result.root = treeNodeOther;
 		
 		else
-			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther, result.root.treeSize);
+			applyCrossOver((BinaryOperatorTreeNode) result.root, treeNodeOther, result.root.treeSize, 0);
 		
 		calculateTreeSizes(result.root);
 		
 		return result;
 	}
-
-	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther, int originalSize) {
+	
+	private void applyCrossOver(BinaryOperatorTreeNode currentNode, TreeNode treeNodeOther, int originalSize, int depth) {
 		
 		// If father of two leaf constant tree nodes
 		if ((currentNode.left instanceof ConstantTreeNode) && (currentNode.right instanceof ConstantTreeNode)) {
@@ -312,6 +314,8 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			// Choose right son
 			else
 				currentNode.right = treeNodeOther;
+			
+			checkDepth(currentNode, depth);
 		}
 		
 		// If leaf node is a constant tree node
@@ -321,14 +325,18 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			double chanceOfRight = chanceOfLeft + 1.0 / originalSize;
 			double chosenDirection = this.rand.nextDouble();
 
-			if (chosenDirection < chanceOfLeft)
+			if (chosenDirection < chanceOfLeft) {
 				currentNode.left = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
-			else if (chosenDirection < chanceOfRight)
+			else if (chosenDirection < chanceOfRight) {
 				currentNode.right = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
 			else
-				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther, originalSize);
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.right, treeNodeOther, originalSize, depth + 1);
 		}
 		
 		// If right node is a constant tree node
@@ -338,14 +346,39 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			double chanceOfLeft = chanceOfRight + 1.0 / originalSize;
 			double chosenDirection = this.rand.nextDouble();
 
-			if (chosenDirection < chanceOfRight)
+			if (chosenDirection < chanceOfRight) {
 				currentNode.right = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
-			else if (chosenDirection < chanceOfLeft)
+			else if (chosenDirection < chanceOfLeft) {
 				currentNode.left = treeNodeOther;
+				checkDepth(currentNode, depth);
+			}
 			
 			else
-				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther, originalSize);
+				applyCrossOver((BinaryOperatorTreeNode) currentNode.left, treeNodeOther, originalSize, depth + 1);
+		}
+	}
+	
+	private void checkDepth(BinaryOperatorTreeNode treeNode, int depth) {
+		
+		if (depth < ExpressionTree.TREE_DEPTH - 1) {
+			if (!(treeNode.left instanceof ConstantTreeNode))
+				checkDepth((BinaryOperatorTreeNode) treeNode.left, depth + 1);
+			
+			if (!(treeNode.right instanceof ConstantTreeNode))
+				checkDepth((BinaryOperatorTreeNode) treeNode.right, depth + 1);
+		}
+		
+		else {
+			// Prune the left node of the current tree
+			if(!(treeNode.left instanceof ConstantTreeNode))	
+				treeNode.left = auxiliaryGenerateConstantTreeNode();
+			
+			// Prune the right side of the current tree
+			if (!(treeNode.right instanceof ConstantTreeNode))
+				treeNode.right = auxiliaryGenerateConstantTreeNode();
 		}
 	}
 
@@ -398,8 +431,12 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 */
 	private TreeNode findNode(TreeNode node, int indice) {
 				
-		if (node instanceof ConstantTreeNode)
-			return node;
+		if (node instanceof ConstantTreeNode) {
+		
+			ConstantTreeNode resultado = (ConstantTreeNode) node.clone();
+			resultado.treeSize = 1;
+			return resultado;
+		}
 		
 		else {
 			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) node;
@@ -412,8 +449,12 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			else if (indice > leftSize)
 				return findNode(treeNode.right, indice - leftSize - 1);
 			
-			else 
-				return node;
+			else {
+			
+				BinaryOperatorTreeNode resultado = treeNode.clone();
+				this.auxiliaryClone(resultado, treeNode);
+				return resultado;
+			}
 		}
 	}
 	
@@ -506,10 +547,10 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 			result.root = this.root.clone();
 
-			if (this.root instanceof BinaryOperatorTreeNode)
+			if (result.root instanceof BinaryOperatorTreeNode)
 				auxiliaryClone((BinaryOperatorTreeNode) result.root, (BinaryOperatorTreeNode) this.root);
 		
-			this.calculateTreeSizes(result.root);
+			result.calculateTreeSizes(result.root);
 		}
 
 		return result;
@@ -518,25 +559,19 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 	private void auxiliaryClone(BinaryOperatorTreeNode currentNodeResult, BinaryOperatorTreeNode currentNodeThis) {
 
-		// Check if left side exists
-		if (currentNodeThis.left != null) {
-			// Copy the left side
-			currentNodeResult.left = currentNodeThis.left.clone();
+		// Copy the left side
+		currentNodeResult.left = currentNodeThis.left.clone();
 
-			// Check if there are more values on the left to copy
-			if (currentNodeThis.left instanceof BinaryOperatorTreeNode) 
-				auxiliaryClone((BinaryOperatorTreeNode) currentNodeResult.left, (BinaryOperatorTreeNode) currentNodeThis.left);
-		}
+		// Copy the right side
+		currentNodeResult.right = currentNodeThis.right.clone();
 
-		// Check if right side exists
-		if (currentNodeThis.right != null) {
-			// Copy the right side
-			currentNodeResult.right = currentNodeThis.right.clone();
+		// Check if there are more values on the left to copy
+		if (currentNodeThis.left instanceof BinaryOperatorTreeNode) 
+			auxiliaryClone((BinaryOperatorTreeNode) currentNodeResult.left, (BinaryOperatorTreeNode) currentNodeThis.left);
 
-			// Check if there are more values on the right to copy
-			if (currentNodeThis.right instanceof BinaryOperatorTreeNode) 
-				auxiliaryClone((BinaryOperatorTreeNode) currentNodeResult.right, (BinaryOperatorTreeNode) currentNodeThis.right);
-		}
+		// Check if there are more values on the right to copy
+		if (currentNodeThis.right instanceof BinaryOperatorTreeNode) 
+			auxiliaryClone((BinaryOperatorTreeNode) currentNodeResult.right, (BinaryOperatorTreeNode) currentNodeThis.right);
 	}
 	
 

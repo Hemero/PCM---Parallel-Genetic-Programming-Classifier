@@ -1,4 +1,4 @@
-package pcm.genetic_algorithm;
+package linearVersion;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -12,7 +12,7 @@ public class ClassifierGA {
 	private static final double THRESHOLD = 0;
 	private static final int AMOUNT_ITERATIONS = 1000;
 	private static final int AMOUNT_POPULATION = 1000;
-	private static final int TOP_AMOUNT_ELITES = Math.max(1, AMOUNT_POPULATION / 100);  // 1% of the population is elite
+	private static final int TOP_AMOUNT_ELITES = 1;
 	
 	private static final double MUTATION_RATE = 0.1;
 	
@@ -50,7 +50,7 @@ public class ClassifierGA {
 
 			System.out.println("Best individual at generation " + geracao + 
 					" with fitness " + this.population[0].getFitness() + ": " + this.population[0]);
-			
+
 			// Create the new population
 			ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 			
