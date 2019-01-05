@@ -142,8 +142,8 @@ public class ClassifierThread extends Thread {
 			setVariablesExpression(row, express);	
 
 			try {
-				double expressionEvaluation = express.evaluate();
 				
+				double expressionEvaluation = express.evaluate();
 				fitness += Math.pow(expressionEvaluation - dataOutput[row], 2);
 				
 			} catch (ArithmeticException ae) {
@@ -152,7 +152,7 @@ public class ClassifierThread extends Thread {
 			}
 		}
 		
-		fitness = Math.sqrt(fitness) / data.length;
+		fitness = Math.sqrt(fitness) / (endTrainingSet - beginTrainingSet);
 		
 		tree.setFitness(fitness);
 		
@@ -198,6 +198,6 @@ public class ClassifierThread extends Thread {
 		
 		for (int i = Math.max(TOP_AMOUNT_ELITES, this.lowLimit); i < this.highLimit; i++) 
 			if (random.nextDouble() < MUTATION_RATE) 
-				newPopulation[i] = newPopulation[i].mutate();
+				newPopulation[i].mutate();
 	}
 }

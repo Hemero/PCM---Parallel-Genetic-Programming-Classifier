@@ -53,7 +53,7 @@ public class MeasureExpression extends RecursiveAction {
 			}
 		}
 		
-		fitness = Math.sqrt(fitness) / data.length;
+		fitness = Math.sqrt(fitness) / (endTrainingSet - beginTrainingSet);
 		
 		tree.setFitness(fitness);
 	}

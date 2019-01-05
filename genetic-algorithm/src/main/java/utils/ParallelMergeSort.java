@@ -63,7 +63,7 @@ public class ParallelMergeSort extends RecursiveAction {
 
 			int j = i;
 
-			while ((j > this.low) && this.individuals[j - 1].getFitness() < aux.getFitness()) {
+			while ((j > this.low) && this.individuals[j - 1].compareTo(aux) > 0) {
 				this.individuals[j] = this.individuals[j - 1];
 				j--;
 			}
@@ -82,7 +82,7 @@ public class ParallelMergeSort extends RecursiveAction {
 
 		while (i1 < middle && i2 < this.high) {
 
-			if (individuals[i1].getFitness() > individuals[i2].getFitness()) {
+			if (individuals[i1].compareTo(individuals[i2]) < 0) {
 				newIndiv[index] = individuals[i1];
 				i1++;
 			}
