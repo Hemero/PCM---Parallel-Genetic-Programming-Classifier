@@ -6,23 +6,30 @@ import abstractsyntaxtree.ExpressionTree;
 import net.objecthunter.exp4j.Expression;
 
 public class MeasureExpression extends RecursiveAction {
-
-	private static final double THRESHOLD = 0;
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4124808217038711638L;
+	
+	// Atributos
 	private ExpressionTree tree;
 	private String[] variables;
 	private double[][] data;
-	private double[] classes;
 	private double[] dataOutput;
+	private int beginTrainingSet;
+	private int endTrainingSet;
 	
 	public MeasureExpression(ExpressionTree tree, double[][] data, 
-			double[] dataOutput, double[] classes, String[] variables) {
+			double[] dataOutput, String[] variables, int beginTrainingSet, int endTrainingSet) {
 		
 		this.tree = tree;
 		this.variables = variables;
 		this.data = data;
 		this.dataOutput = dataOutput;
-		this.classes = classes;
+		
+		this.beginTrainingSet = beginTrainingSet;
+		this.endTrainingSet = endTrainingSet;
 	}
 	
 	@Override
@@ -30,8 +37,8 @@ public class MeasureExpression extends RecursiveAction {
 
 		Expression express = tree.getExpression();
 		double fitness = 0;
-
-		for (int row = 0; row < data.length; row++) {
+		
+		for (int row = this.beginTrainingSet; row < this.endTrainingSet; row++) {
 
 			setVariablesExpression(row, express);	
 
