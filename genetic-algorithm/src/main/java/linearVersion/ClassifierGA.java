@@ -30,9 +30,9 @@ public class ClassifierGA {
 	private int amountPartsTrainingSet;
 
 	private Random random;
-	
+
 	public ClassifierGA(double[][] data, double[] dataOutput, String[] variables) {
-		
+
 		this.data = data;
 		this.variables = variables;
 		this.dataOutput = dataOutput;
@@ -51,7 +51,24 @@ public class ClassifierGA {
 		int beginTrainingSet = 0;
 		int endTrainingSet = 0;
 
-		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
+		// Create the new population
+		ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
+
+		// Calcular o Fitness
+		for (int j = 0; j < AMOUNT_POPULATION; j++)
+			measureFitness(population[j], 0, data.length * (this.amountPartsTrainingSet));
+
+		// Sort das arvores por ordem descendente
+		Arrays.sort(this.population);
+		
+		System.out.println("Best individual at generation 0 with fitness " +
+				this.population[0].getFitness() + ": " + this.population[0]);
+
+		// Copy the TOP_AMOUNT_ELITES to the new population
+		for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
+			newPopulation[i] = this.population[i];
+
+		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
 			// Get if we should get the all dataset or partitions of it
 			if (geracao > SPLIT_THRESHOLD) {
@@ -67,20 +84,6 @@ public class ClassifierGA {
 					endTrainingSet = this.data.length;
 			}
 
-			// Create the new population
-			ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
-
-			// Calcular o Fitness
-			for (int j = 0; j < AMOUNT_POPULATION; j++)
-				measureFitness(population[j], beginTrainingSet, endTrainingSet);
-
-			// Sort das arvores por ordem descendente
-			Arrays.sort(this.population);
-
-			// Copy the TOP_AMOUNT_ELITES to the new population
-			for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
-				newPopulation[i] = this.population[i];
-
 			for (int j = 0; j < AMOUNT_POPULATION; j++) {
 				operations(newPopulation, j, beginTrainingSet, endTrainingSet);
 			}
@@ -91,6 +94,7 @@ public class ClassifierGA {
 
 			System.out.println("Best individual at generation " + geracao + 
 					" with fitness " + this.population[0].getFitness() + ": " + this.population[0]);
+
 		}
 	}
 
