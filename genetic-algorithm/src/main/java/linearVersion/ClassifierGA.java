@@ -8,7 +8,7 @@ import net.objecthunter.exp4j.Expression;
 
 public class ClassifierGA {
 
-	// Constants
+	// Constantes do Programa 
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 	private static final int AMOUNT_ITERATIONS = 500;
 
@@ -48,68 +48,44 @@ public class ClassifierGA {
 
 	public void startClassification() {
 
-		int beginTrainingSet = 0;
-		int endTrainingSet = 0;
-
 		// Create the new population
 		ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 
 		// Calcular o Fitness
 		for (int j = 0; j < AMOUNT_POPULATION; j++)
-			measureFitness(population[j], 0, data.length * (this.amountPartsTrainingSet));
+			measureFitness(population[j], 0);
 
 		// Sort das arvores por ordem descendente
 		Arrays.sort(this.population);
 		
 		System.out.println("Best individual at generation 0 with fitness " +
-				this.population[0].getFitness() + ": " + this.population[0]);
-
-		// Copy the TOP_AMOUNT_ELITES to the new population
-		for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
-			newPopulation[i] = this.population[i];
+							this.population[0].getFitness() + ": " + this.population[0]);
 
 		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
-			// Get if we should get the all dataset or partitions of it
-			if (geracao > SPLIT_THRESHOLD) {
+			// Copy the TOP_AMOUNT_ELITES to the new population
+			for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
+				newPopulation[i] = this.population[i];
+		
+			// Gather the rest of the sons into the array
+			for (int j = 0; j < AMOUNT_POPULATION; j++)
+				operations(newPopulation, j, geracao);
 
-				beginTrainingSet = 0;
-				endTrainingSet = this.data.length;
-			} else {
+			// Sort the new population
+			Arrays.sort(newPopulation);
 
-				beginTrainingSet = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
-				endTrainingSet = (((geracao + 1) % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet));
-
-				if (((geracao + 1) % this.amountPartsTrainingSet) == 0)
-					endTrainingSet = this.data.length;
-			}
-
-			for (int j = 0; j < AMOUNT_POPULATION; j++) {
-				operations(newPopulation, j, beginTrainingSet, endTrainingSet);
-			}
-
+			// Set the new population
 			this.population = newPopulation;
-
-			Arrays.sort(this.population);
-
+			
 			System.out.println("Best individual at generation " + geracao + 
-					" with fitness " + this.population[0].getFitness() + ": " + this.population[0]);
+							   " with fitness " + this.population[0].getFitness() + 
+							   ": " + this.population[0]);
 
+			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}
 	}
 
-	private void operations(ExpressionTree[] newPopulation, int j, int beginTrainingSet, int endTrainingSet) {
-		/*
-		 * There are many ways to choose how to apply crossOvers to the next iteration:
-		 * Steady Choice, Elitism Selection, Roulette Selection, Tournament Selection, Entropy-Boltzmann Selection
-		 * 
-		 * The study presented in [5] (check github) shows that Tournament Selection is more efficient than
-		 * Roulette selection. 
-		 * 
-		 * Also, a small portion of the population should be elites and not suffer any crossOvers/Mutations
-		 * These elites have the best genes so they carry their genes to the following generations.
-		 * Too many elites can cause the population to degenerate.
-		 */
+	private void operations(ExpressionTree[] newPopulation, int j, int geracao) {
 
 		if (j >= TOP_AMOUNT_ELITES) {
 			// CrossOver
@@ -125,8 +101,7 @@ public class ClassifierGA {
 		}
 
 		// Calcular o Fitness
-		measureFitness(newPopulation[j], beginTrainingSet, endTrainingSet);
-
+		measureFitness(newPopulation[j], geracao);
 	}
 
 	private void generatePopulation() {
@@ -135,9 +110,13 @@ public class ClassifierGA {
 			this.population[i] = new ExpressionTree(variables);
 	}
 
-	private double measureFitness(ExpressionTree tree, int beginTrainingSet, int endTrainingSet) {
+	private double measureFitness(ExpressionTree tree, int geracao) {
 
+		int beginTrainingSet = this.getBeginningTrainingSet(geracao);
+		int endTrainingSet = this.getEndTrainingSet(geracao);
+		
 		Expression express = tree.getExpression();
+		
 		double fitness = 0;
 
 		for (int row = beginTrainingSet; row < endTrainingSet; row++) {
@@ -167,5 +146,32 @@ public class ClassifierGA {
 		for (int col = 0; col < data[row].length; col++) {
 			express.setVariable(variables[col], data[row][col]);
 		}
+	}
+	
+	private int getBeginningTrainingSet(int geracao) {
+		
+		int resultado = 0;
+		
+		// Keep splitting until the threshold is reached
+		if (geracao <= SPLIT_THRESHOLD)
+			resultado = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
+		
+		return resultado;
+	}
+	
+	private int getEndTrainingSet(int geracao) {
+		
+		int resultado = this.data.length;
+
+		// Keep splitting until the threshold is reached
+		if (geracao <= SPLIT_THRESHOLD) {
+			
+			resultado = (((geracao + 1) % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet));
+
+			if (((geracao + 1) % this.amountPartsTrainingSet) == 0)
+				resultado = this.data.length;
+		}
+		
+		return resultado;
 	}
 }

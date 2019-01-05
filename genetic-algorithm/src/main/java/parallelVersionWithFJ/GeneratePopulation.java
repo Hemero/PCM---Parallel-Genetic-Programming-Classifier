@@ -7,6 +7,11 @@ import abstractsyntaxtree.ExpressionTree;
 
 public class GeneratePopulation extends RecursiveAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -409105094126970841L;
+
 	private static final int LIMIT = 2;
 	
 	private ExpressionTree[] population;

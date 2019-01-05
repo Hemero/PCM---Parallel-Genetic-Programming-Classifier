@@ -5,9 +5,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RecursiveAction;
 
 import abstractsyntaxtree.ExpressionTree;
-import net.objecthunter.exp4j.Expression;
 
 public class ApplyCrossOver extends RecursiveAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4715110914974747078L;
 
 	private static final int LIMIT = 2;
 	
