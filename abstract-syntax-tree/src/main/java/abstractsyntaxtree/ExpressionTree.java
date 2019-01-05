@@ -74,6 +74,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 	// Constants
 	private static final int TREE_DEPTH = 10;
+	private static final int TREE_CROSS_OVER_DEPTH = 15;
 	private static final double CONST_NODE_GEN = 0.5;
 	
 	private static final int UPPER_BOUND = 100;
@@ -363,7 +364,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	
 	private void checkDepth(BinaryOperatorTreeNode treeNode, int depth) {
 		
-		if (depth < ExpressionTree.TREE_DEPTH - 1) {
+		if (depth < ExpressionTree.TREE_CROSS_OVER_DEPTH - 1) {
 			if (!(treeNode.left instanceof ConstantTreeNode))
 				checkDepth((BinaryOperatorTreeNode) treeNode.left, depth + 1);
 			

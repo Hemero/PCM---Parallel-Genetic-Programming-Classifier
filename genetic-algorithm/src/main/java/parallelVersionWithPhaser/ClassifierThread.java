@@ -75,8 +75,8 @@ public class ClassifierThread extends Thread {
 			this.phaser.arriveAndAwaitAdvance();
 			
 			if (threadId == 0)
-				System.out.println("Best individual at generation " + geracao + ": " + this.population[0] + " with fitness " + this.population[0].getFitness());
-			
+				System.out.println("Best individual at generation " + geracao + 
+						" with fitness " + this.population[0].getFitness() + ": " + this.population[0]);			
 			// Create the new population
 			ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 			

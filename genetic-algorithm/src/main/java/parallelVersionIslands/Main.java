@@ -1,11 +1,10 @@
-package parallelVersionWithPhaser;
+package parallelVersionIslands;
 
 import utils.LoadData;
 
 public class Main {
-	
-	public static void main(String[] args) {
 
+	public static void main(String[] args) {
 		LoadData loadData = new LoadData("../students/CompleteStudentsPerformance.csv");
 		// LoadData loadData = new LoadData("../students/StudentsPerformance.csv");
 		
@@ -15,7 +14,6 @@ public class Main {
 		
 		String[] variables = loadData.getVariables();
 	
-		ClassifierGA classificador = new ClassifierGA(data, classes, dataOutput, variables);
-		classificador.startClassification();
+		// TODO:
 	}
 }

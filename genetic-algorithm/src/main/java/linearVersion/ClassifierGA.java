@@ -9,41 +9,61 @@ import net.objecthunter.exp4j.Expression;
 public class ClassifierGA {
 
 	// Constantes
-	private static final double THRESHOLD = 0;
+	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 	private static final int AMOUNT_ITERATIONS = 1000;
-	private static final int AMOUNT_POPULATION = 1000;
-	private static final int TOP_AMOUNT_ELITES = 1;
 	
+	// Population Constants
+	private static final int TOP_AMOUNT_ELITES = 1;
+	private static final int AMOUNT_POPULATION = 1000;
+
+	// Operations Constants
+	private static final double THRESHOLD = 0;
 	private static final double MUTATION_RATE = 0.1;
 	
+	
 	// Atributos
+	private ExpressionTree[] population;
+	
+	// Data-set information
 	private double[][] data;
 	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
+	private int amountPartsTrainingSet;
 	
 	private Random random;
-	private ExpressionTree[] population;
 	
 	public ClassifierGA(double[][] data, double[] classes, double[] dataOutput, String[] variables) {
 		
 		this.data = data;
 		this.classes = classes;
-		this.dataOutput = dataOutput;
 		this.variables = variables;
+		this.dataOutput = dataOutput;
 		
 		this.random = new Random();
 		this.population = new ExpressionTree[AMOUNT_POPULATION];
+		
+		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
 		
 		// 0. Gerar a populacao inicial
 		generatePopulation();
 	}
 	
 	public void startClassification() {
+		
+		int beginTrainingSet = 0;
+		int endTrainingSet = 0;
+
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
+		
+			beginTrainingSet = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
+			endTrainingSet = (((geracao + 1) % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet));
+			
+			if (((geracao + 1) % this.amountPartsTrainingSet) == 0)
+				endTrainingSet = this.data.length;
 			
 			// 1. Calcular o Fitness
-			measureFitness();
+			measureFitness(beginTrainingSet, endTrainingSet);
 			
 			// 2. Sort das arvores por ordem descendente
 			Arrays.sort(this.population);
@@ -74,19 +94,19 @@ public class ClassifierGA {
 			this.population[i] = new ExpressionTree(variables);
 	}
 
-	private void measureFitness() {
+	private void measureFitness(int beginTrainingSet, int endTrainingSet) {
 		
 		for (int i = 0; i < AMOUNT_POPULATION; i++) {
-			measureExpression(population[i]);
+			measureExpression(population[i], beginTrainingSet, endTrainingSet);
 		}
 	}
 	
-	private double measureExpression(ExpressionTree tree) {
+	private double measureExpression(ExpressionTree tree, int beginTrainingSet, int endTrainingSet) {
 
 		Expression express = tree.getExpression();
 		int correctlyClassified = 0;
 
-		for (int row = 0; row < data.length; row++) {
+		for (int row = beginTrainingSet; row < endTrainingSet; row++) {
 
 			setVariablesExpression(row, express);	
 
