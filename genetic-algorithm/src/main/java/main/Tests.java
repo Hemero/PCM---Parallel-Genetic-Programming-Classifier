@@ -1,4 +1,4 @@
-package linearVersion;
+package main;
 
 import abstractsyntaxtree.ExpressionTree;
 
