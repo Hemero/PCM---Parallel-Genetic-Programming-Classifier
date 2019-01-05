@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.ArrayList;
 
 import com.opencsv.CSVReader;
@@ -12,7 +13,8 @@ import com.opencsv.CSVReader;
 public class LoadData {
 
 	// Atributos
-	private double[][] data;
+	private double[][] trainingData;
+	private double[][] testData;
 	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
@@ -62,10 +64,17 @@ public class LoadData {
 					classesTemp.add(classeDaLinha);
 			}
 			
-			this.data = new double[dataTemp.size()][dataTemp.get(0).length];
+			Collections.shuffle(dataTemp);
 			
-			for (int i = 0; i < this.data.length; i++)
-				this.data[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
+			int trainingSize = (int) Math.floor(dataTemp.size()*0.7);
+			this.trainingData = new double[trainingSize][dataTemp.get(0).length];
+			this.testData = new double[dataTemp.size() - trainingSize][dataTemp.get(0).length];
+			
+			for (int i = 0; i < trainingSize; i++)
+				this.trainingData[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
+			
+			for (int i = trainingSize; i < dataTemp.size(); i++)
+				this.testData[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
 			
 			this.dataOutput = dataOutputTemp.stream().mapToDouble(i -> i).toArray();
 			this.classes = classesTemp.stream().mapToDouble(i -> i).toArray();
@@ -86,7 +95,7 @@ public class LoadData {
 	}
 
 	public double[][] getData() {
-		return data;
+		return trainingData;
 	}
 
 	public String[] getVariables() {
