@@ -74,7 +74,7 @@ public class LoadData {
 				this.trainingData[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
 			
 			for (int i = trainingSize; i < dataTemp.size(); i++)
-				this.testData[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
+				this.testData[i - trainingSize] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
 			
 			this.dataOutput = dataOutputTemp.stream().mapToDouble(i -> i).toArray();
 			this.classes = classesTemp.stream().mapToDouble(i -> i).toArray();
