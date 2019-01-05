@@ -578,18 +578,18 @@ public class ExpressionTree implements ExpressionTreeInterface {
 
 	/**
 	 * Compares if the current tree has a better fitness than the other tree
-	 * @return smaller than 0 if it has a smaller fitness, 0 if it has the same 
-	 * fitness, greater than 0 if it has a higher fitness.
+	 * @return smaller than 0 if it has a bigger fitness, 0 if it has the same 
+	 * fitness, greater than 0 if it has a smaller fitness.
 	 */
 	@Override
 	public int compareTo(ExpressionTreeInterface other) {
 		
 		int resultado = 0;
 		
-		if (this.fitness > other.getFitness())
+		if (this.fitness < other.getFitness())
 			resultado = -1;
 		
-		else if (this.fitness < other.getFitness())
+		else if (this.fitness > other.getFitness())
 			resultado = 1;
 		
 		return resultado;

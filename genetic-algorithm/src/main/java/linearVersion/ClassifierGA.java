@@ -112,7 +112,7 @@ public class ClassifierGA {
 	private double measureExpression(ExpressionTree tree, int beginTrainingSet, int endTrainingSet) {
 
 		Expression express = tree.getExpression();
-		int correctlyClassified = 0;
+		double fitness = 0;
 
 		for (int row = beginTrainingSet; row < endTrainingSet; row++) {
 
@@ -121,17 +121,15 @@ public class ClassifierGA {
 			try {
 				double expressionEvaluation = express.evaluate();
 				
-				if ((expressionEvaluation < THRESHOLD && dataOutput[row] == classes[0]) || 
-					(expressionEvaluation >= THRESHOLD && dataOutput[row] == classes[1])) {
-
-					correctlyClassified++;
-				}
+				fitness += Math.pow(expressionEvaluation - dataOutput[row], 2);
+				
 			} catch (ArithmeticException ae) {
-				// Do nothing - counts as incorrectly classified
+				// assume error is really big
+				fitness += Integer.MAX_VALUE;
 			}
 		}
 		
-		double fitness = 1.0*correctlyClassified / (endTrainingSet - beginTrainingSet);
+		fitness = Math.sqrt(fitness) / (endTrainingSet - beginTrainingSet);
 		
 		tree.setFitness(fitness);
 		

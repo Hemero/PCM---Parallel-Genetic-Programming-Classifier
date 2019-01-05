@@ -113,7 +113,7 @@ public class ClassifierThread extends Thread {
 	private double measureExpression(ExpressionTree tree) {
 
 		Expression express = tree.getExpression();
-		int correctlyClassified = 0;
+		double fitness = 0;
 
 		for (int row = 0; row < data.length; row++) {
 
@@ -122,17 +122,15 @@ public class ClassifierThread extends Thread {
 			try {
 				double expressionEvaluation = express.evaluate();
 				
-				if ((expressionEvaluation < THRESHOLD && dataOutput[row] == classes[0]) || 
-					(expressionEvaluation >= THRESHOLD && dataOutput[row] == classes[1])) {
-
-					correctlyClassified++;
-				}
+				fitness += Math.pow(expressionEvaluation - dataOutput[row], 2);
+				
 			} catch (ArithmeticException ae) {
-				// Do nothing - counts as incorrectly classified
+				// assume error is really big
+				fitness += Integer.MAX_VALUE;
 			}
 		}
 		
-		double fitness = 1.0 * correctlyClassified / data.length;
+		fitness = Math.sqrt(fitness) / data.length;
 		
 		tree.setFitness(fitness);
 		
