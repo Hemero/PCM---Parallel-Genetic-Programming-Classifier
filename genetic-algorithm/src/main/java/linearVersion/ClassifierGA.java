@@ -8,7 +8,7 @@ import net.objecthunter.exp4j.Expression;
 
 public class ClassifierGA {
 
-	// Constantes
+	// Constants
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 	private static final int AMOUNT_ITERATIONS = 500;
 
@@ -17,27 +17,23 @@ public class ClassifierGA {
 	private static final int AMOUNT_POPULATION = 1000;
 
 	// Operations Constants
-	private static final double THRESHOLD = 0;
 	private static final double MUTATION_RATE = 0.1;
 	private static final int SPLIT_THRESHOLD = 100;
-
 
 	// Atributos
 	private ExpressionTree[] population;
 
 	// Data-set information
 	private double[][] data;
-	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
 	private int amountPartsTrainingSet;
 
 	private Random random;
-
-	public ClassifierGA(double[][] data, double[] classes, double[] dataOutput, String[] variables) {
-
+	
+	public ClassifierGA(double[][] data, double[] dataOutput, String[] variables) {
+		
 		this.data = data;
-		this.classes = classes;
 		this.variables = variables;
 		this.dataOutput = dataOutput;
 
@@ -57,10 +53,11 @@ public class ClassifierGA {
 
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 
+			// Get if we should get the all dataset or partitions of it
 			if (geracao > SPLIT_THRESHOLD) {
 
 				beginTrainingSet = 0;
-				endTrainingSet = data.length;
+				endTrainingSet = this.data.length;
 			} else {
 
 				beginTrainingSet = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
@@ -144,8 +141,8 @@ public class ClassifierGA {
 			setVariablesExpression(row, express);	
 
 			try {
-				double expressionEvaluation = express.evaluate();
 
+				double expressionEvaluation = express.evaluate();
 				fitness += Math.pow(expressionEvaluation - dataOutput[row], 2);
 
 			} catch (ArithmeticException ae) {

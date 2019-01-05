@@ -5,10 +5,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RecursiveAction;
 
 import abstractsyntaxtree.ExpressionTree;
-import net.objecthunter.exp4j.Expression;
 
 public class ApplyMutation extends RecursiveAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2985693753677306747L;
+	
 	private static final int LIMIT = 2;
 	private static final double MUTATION_RATE = 0.1;
 	
@@ -33,14 +37,12 @@ public class ApplyMutation extends RecursiveAction {
 	@Override
 	protected void compute() {
 		
-		int populationLength = this.population.length;
-		
 		if (end-beg < LIMIT) {
 			
 			for (int i = beg; i < end; i++) {
 				
 				if (random.nextDouble() < MUTATION_RATE) {
-					newPopulation[i].mutate();
+					newPopulation[i] = newPopulation[i].mutate();
 				}			
 			}
 		} else {

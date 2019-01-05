@@ -9,41 +9,46 @@ import utils.ParallelMergeSort;
 
 public class ClassifierThread extends Thread {
 
-	// Constantes
-	private static final double THRESHOLD = 0;
-	private static final int TOP_AMOUNT_ELITES = 1;
+	// Constantes das definicoes do programa
+	private static final int TRAINING_SET_SPLIT_SIZE = 100;
+	private static final int SPLIT_THRESHOLD = 100;
 	private static final int AMOUNT_ITERATIONS = 1000;
-	private static final int AMOUNT_POPULATION = 1000;
 	
+	// Constantes da populacao
 	private static final double MUTATION_RATE = 0.1;
+	private static final int TOP_AMOUNT_ELITES = 1;
+	private static final int AMOUNT_POPULATION = 1000;
 	
 	// Atributos
 	private int threadId;
 	private int lowLimit;
 	private int highLimit;
 	
+	// Atributos dataset
 	private double[][] data;
-	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
+	private int amountPartsTrainingSet;
 	
+	// Atributos da Thread
 	private Phaser phaser;
 	private ThreadLocalRandom random;
 	private ExpressionTree[] population;
 
 	public ClassifierThread(int threadId, int lowLimit, int highLimit,
 							double[][] data, double[] dataOutput, 
-							double[] classes, String[] variables, 
-							ExpressionTree[] population, Phaser phaser) {
+							String[] variables, ExpressionTree[] population,
+							Phaser phaser) {
 		
 		this.threadId = threadId;
 		this.lowLimit = lowLimit;
 		this.highLimit = highLimit;
 		
 		this.data = data;
-		this.classes = classes;
 		this.dataOutput = dataOutput;
 		this.variables = variables;
+
+		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
 		
 		this.phaser = phaser;
 		this.population = population;
@@ -62,7 +67,7 @@ public class ClassifierThread extends Thread {
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 
 			// 1. Calcular o Fitness
-			measureFitness();
+			measureFitness(geracao);
 			
 			// Await for everyone to do the operations
 			this.phaser.arriveAndAwaitAdvance();
@@ -104,24 +109,41 @@ public class ClassifierThread extends Thread {
 			this.population[i] = new ExpressionTree(variables);
 	}
 
-	private void measureFitness() {
+	private void measureFitness(int geracao) {
+		
+		int beginTrainingSet = 0;
+		int endTrainingSet = 0;
+		
+		// Get if we should get the all data-set or partitions of it
+		if (geracao > SPLIT_THRESHOLD) {
+			
+			beginTrainingSet = 0;
+			endTrainingSet = this.data.length;
+		} else {
+			
+			beginTrainingSet = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
+			endTrainingSet = (((geracao + 1) % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet));
+			
+			if (((geracao + 1) % this.amountPartsTrainingSet) == 0)
+				endTrainingSet = this.data.length;
+		}
 		
 		for (int i = this.lowLimit; i < this.highLimit; i++)
-			measureExpression(population[i]);
+			measureExpression(population[i], beginTrainingSet, endTrainingSet);
 	}
 	
-	private double measureExpression(ExpressionTree tree) {
+	private double measureExpression(ExpressionTree tree, int beginTrainingSet, int endTrainingSet) {
 
 		Expression express = tree.getExpression();
 		double fitness = 0;
 
-		for (int row = 0; row < data.length; row++) {
+		for (int row = beginTrainingSet; row < endTrainingSet; row++) {
 
 			setVariablesExpression(row, express);	
 
 			try {
-				double expressionEvaluation = express.evaluate();
 				
+				double expressionEvaluation = express.evaluate();
 				fitness += Math.pow(expressionEvaluation - dataOutput[row], 2);
 				
 			} catch (ArithmeticException ae) {
@@ -130,7 +152,7 @@ public class ClassifierThread extends Thread {
 			}
 		}
 		
-		fitness = Math.sqrt(fitness) / data.length;
+		fitness = Math.sqrt(fitness) / (endTrainingSet - beginTrainingSet);
 		
 		tree.setFitness(fitness);
 		

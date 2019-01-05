@@ -5,38 +5,63 @@ import utils.ParallelMergeSort;
 
 public class ClassifierGA {
 
-	// Constantes
+	// Constants
+	private static final int SPLIT_THRESHOLD = 100;
+	private static final int AMOUNT_ITERATIONS = 1000;
+	private static final int TRAINING_SET_SPLIT_SIZE = 100;
+	
+	// Population Constants
 	private static final int AMOUNT_POPULATION = 1000;
 	private static final int TOP_AMOUNT_ELITES = 1;
-	private static final int AMOUNT_ITERATIONS = 1000;
 
 	// Atributos
 	private double[][] data;
-	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
+	private int amountPartsTrainingSet;
+	
 	private ExpressionTree[] population;
 
-	public ClassifierGA(double[][] data, double[] classes, double[] dataOutput, String[] variables) {
+	public ClassifierGA(double[][] data,  double[] dataOutput, String[] variables) {
 
 		this.data = data;
-		this.classes = classes;
 		this.dataOutput = dataOutput;
 		this.variables = variables;
 		this.population = new ExpressionTree[AMOUNT_POPULATION];
 
+		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
+		
 		GeneratePopulation generatePopulationAction =
 				new GeneratePopulation(population, this.variables, 0, AMOUNT_POPULATION);
+		
 		generatePopulationAction.compute();
 	}
 
 	public void startClassification() {
-		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 
+		int beginTrainingSet = 0;
+		int endTrainingSet = 0;
+		
+		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
+			
+			// Get if we should get the all data-set or partitions of it
+			if (geracao > SPLIT_THRESHOLD) {
+				
+				beginTrainingSet = 0;
+				endTrainingSet = this.data.length;
+			} else {
+				
+				beginTrainingSet = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
+				endTrainingSet = (((geracao + 1) % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet));
+				
+				if (((geracao + 1) % this.amountPartsTrainingSet) == 0)
+					endTrainingSet = this.data.length;
+			}
+			
 			// 1. Calcular o Fitness
 			MeasureFitness measureFitness = 
-					new MeasureFitness(population, data, dataOutput, classes, 
-							variables, 0, AMOUNT_POPULATION);
+					new MeasureFitness(population, data, dataOutput, 
+							variables, 0, AMOUNT_POPULATION, beginTrainingSet, endTrainingSet);
 			measureFitness.compute();
 
 			// 2. Sort das arvores por ordem descendente

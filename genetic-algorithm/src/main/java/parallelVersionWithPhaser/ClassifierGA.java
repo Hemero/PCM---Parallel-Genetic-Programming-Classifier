@@ -12,14 +12,12 @@ public class ClassifierGA {
 	
 	// Atributos
 	private double[][] data;
-	private double[] classes;
 	private double[] dataOutput;
 	private String[] variables;
 	
-	public ClassifierGA(double[][] data, double[] classes, double[] dataOutput, String[] variables) {
+	public ClassifierGA(double[][] data, double[] dataOutput, String[] variables) {
 		
 		this.data = data;
-		this.classes = classes;
 		this.dataOutput = dataOutput;
 		this.variables = variables;
 	}
@@ -44,7 +42,7 @@ public class ClassifierGA {
 				high = population.length;
 			
 			classifiers[threadId] = new ClassifierThread(threadId, low, high, 
-							data, dataOutput, classes, variables, population, phaser);
+							data, dataOutput, variables, population, phaser);
 			classifiers[threadId].start();
 		}
 				
