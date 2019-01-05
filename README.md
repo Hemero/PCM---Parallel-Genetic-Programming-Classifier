@@ -34,7 +34,9 @@ You should include your paper and any source code used or developed (including b
 
 [5] [Comparison of Performance between Different Selection Strategies on Simple Genetic Algorithms](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.140.3747&rep=rep1&type=pdf)
 
-### Recursos de Programação
-[6] [exp4j - Expression Builder from String (Java)](https://www.objecthunter.net/exp4j/index.html)
+[6] [Adapting CrossOver and Mutation Rates in Genetic Algorithms](http://www.iis.sinica.edu.tw/page/jise/2003/200309_10.pdf)
 
-[7] [exprtk - C++ Mathematical Expression Library](http://www.partow.net/programming/exprtk/)
+### Recursos de Programação
+[1] [exp4j - Expression Builder from String (Java)](https://www.objecthunter.net/exp4j/index.html)
+
+[2] [exprtk - C++ Mathematical Expression Library](http://www.partow.net/programming/exprtk/)
