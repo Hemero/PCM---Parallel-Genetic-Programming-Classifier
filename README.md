@@ -36,8 +36,7 @@ You should include your paper and any source code used or developed (including b
 
 [6] [Adapting CrossOver and Mutation Rates in Genetic Algorithms](http://www.iis.sinica.edu.tw/page/jise/2003/200309_10.pdf)
 
-[7] [A New Strategy for Adapting the Mutation Probability in Genetic Algorithms]
-(https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=9&ved=2ahUKEwjsjtn7p9nfAhV_AGMBHWY0D14QFjAIegQIAhAC&url=http%3A%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fdownload%3Fdoi%3D10.1.1.1017.3668%26rep%3Drep1%26type%3Dpdf&usg=AOvVaw0U4KJ-tEB13ZN4BHp5vJ16)
+[7] [A New Strategy for Adapting the Mutation Probability in Genetic Algorithms](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=9&ved=2ahUKEwjsjtn7p9nfAhV_AGMBHWY0D14QFjAIegQIAhAC&url=http%3A%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fdownload%3Fdoi%3D10.1.1.1017.3668%26rep%3Drep1%26type%3Dpdf&usg=AOvVaw0U4KJ-tEB13ZN4BHp5vJ16)
 
 ### Recursos de Programação
 [1] [exp4j - Expression Builder from String (Java)](https://www.objecthunter.net/exp4j/index.html)
