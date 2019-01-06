@@ -10,14 +10,16 @@ public class InnerIslandThread extends Thread {
 	
 	// Atributos
 	private int threadId;
+	private int geracao;
 	private int startLimit;
 	private int endLimit;
 	
 	private Phaser phaser;
 	
-	public InnerIslandThread(int threadId, int startLimit, int endLimit, Phaser phaser) {
+	public InnerIslandThread(int threadId, int startLimit, int endLimit, int geracao, Phaser phaser) {
 		
 		this.threadId = threadId;
+		this.geracao = geracao;
 		this.startLimit = startLimit;
 		this.endLimit = endLimit;
 		
@@ -30,7 +32,7 @@ public class InnerIslandThread extends Thread {
 		phaser.arriveAndAwaitAdvance();
 		
 		// TODO:
-		for (int geracao = 0; geracao < Island.AMOUNT_ITERATIONS; geracao++) {
+		for (int geracaoAtual = this.geracao; geracaoAtual < Island.AMOUNT_ITERATIONS; geracaoAtual++) {
 			phaser.arriveAndAwaitAdvance();
 			phaser.arriveAndAwaitAdvance();
 			phaser.arriveAndAwaitAdvance();

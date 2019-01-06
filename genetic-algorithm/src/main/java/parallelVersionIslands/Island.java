@@ -105,7 +105,7 @@ public class Island extends Thread {
 			if (threadId == quantidadeThreads)
 				endLimit = this.population.length;
 			
-			this.innerIslandThreads.add(new InnerIslandThread(threadId, startLimit, endLimit, phaser));
+			this.innerIslandThreads.add(new InnerIslandThread(threadId, startLimit, endLimit, 0, phaser));
 			this.innerIslandThreads.get(threadId - 1).start();
 		}
 	}
@@ -150,7 +150,7 @@ public class Island extends Thread {
 			
 			// I can create some amount of threads which will be available
 			if (!this.threadBuffer.isEmpty()) 
-				this.createNewInnerIslandThreads();
+				this.createNewInnerIslandThreads(geracao);
 			
 			this.phaser.arriveAndAwaitAdvance();
 			
@@ -187,7 +187,7 @@ public class Island extends Thread {
 		mergeSort.compute();
 	}	
 	
-	private void createNewInnerIslandThreads() {
+	private void createNewInnerIslandThreads(int geracao) {
 		
 		int amountThreads = 0;
 		
@@ -202,7 +202,7 @@ public class Island extends Thread {
 		// Criar as novas threads
 		while (amountThreads > 0) {
 			
-			InnerIslandThread newThread = new InnerIslandThread(this.innerIslandThreads.size(), -1, -1, phaser);
+			InnerIslandThread newThread = new InnerIslandThread(this.innerIslandThreads.size(), -1, -1, geracao, phaser);
 			this.innerIslandThreads.add(newThread);
 			
 			this.phaser.register();
