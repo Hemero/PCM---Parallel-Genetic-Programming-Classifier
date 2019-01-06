@@ -41,4 +41,6 @@ You should include your paper and any source code used or developed (including b
 ### Recursos de Programação
 [1] [exp4j - Expression Builder from String (Java)](https://www.objecthunter.net/exp4j/index.html)
 
-[2] [exprtk - C++ Mathematical Expression Library](http://www.partow.net/programming/exprtk/)
+[2] [Java String Similarity](https://github.com/tdebatty/java-string-similarity)
+
+[3] [exprtk - C++ Mathematical Expression Library](http://www.partow.net/programming/exprtk/)

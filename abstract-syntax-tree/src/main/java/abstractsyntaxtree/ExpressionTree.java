@@ -288,7 +288,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		calculateTreeSizes(result.root);
 		
 		int randomIndexOther = this.rand.nextInt(other.root.treeSize);
-		TreeNode treeNodeOther = this.findNode(other.root, randomIndexOther);
+		TreeNode treeNodeOther = this.findNodeClone(other.root, randomIndexOther);
 
 		if (result.root.treeSize == 1)
 			result.root = treeNodeOther;
@@ -432,6 +432,33 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 */
 	private TreeNode findNode(TreeNode node, int indice) {
 				
+		if (node instanceof ConstantTreeNode)
+			return node;
+		
+		else {
+			BinaryOperatorTreeNode treeNode = (BinaryOperatorTreeNode) node;
+			
+			int leftSize = treeNode.left.treeSize;
+			
+			if (indice < leftSize) 
+				return findNode(treeNode.left, indice);
+			
+			else if (indice > leftSize)
+				return findNode(treeNode.right, indice - leftSize - 1);
+			
+			else 
+				return node;
+		}
+	}
+	
+	/**
+	 * Find node which has tree
+	 * @param value
+	 * @param node
+	 * @return
+	 */
+	private TreeNode findNodeClone(TreeNode node, int indice) {
+				
 		if (node instanceof ConstantTreeNode) {
 		
 			ConstantTreeNode resultado = (ConstantTreeNode) node.clone();
@@ -445,10 +472,10 @@ public class ExpressionTree implements ExpressionTreeInterface {
 			int leftSize = treeNode.left.treeSize;
 			
 			if (indice < leftSize) 
-				return findNode(treeNode.left, indice);
+				return findNodeClone(treeNode.left, indice);
 			
 			else if (indice > leftSize)
-				return findNode(treeNode.right, indice - leftSize - 1);
+				return findNodeClone(treeNode.right, indice - leftSize - 1);
 			
 			else {
 			

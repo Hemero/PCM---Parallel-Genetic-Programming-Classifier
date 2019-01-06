@@ -1,6 +1,8 @@
 package main;
 
+
 import abstractsyntaxtree.ExpressionTree;
+import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 
 public class Tests {
 
@@ -22,5 +24,9 @@ public class Tests {
 		
 		ExpressionTree mutatedTree = crossedClone.mutate();
 		System.out.println("Mutated Tree: " + mutatedTree);
+		
+		 NormalizedLevenshtein  l = new NormalizedLevenshtein ();
+		 
+		 System.out.println(l.distance(tree2.toString(), crossed.toString()));
 	}
 }
