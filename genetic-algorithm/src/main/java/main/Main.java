@@ -18,14 +18,14 @@ public class Main {
 		// linearVersion.ClassifierGA classificador = new linearVersion.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela com Fork Join
-		parallelVersionWithFJ.ClassifierGA classificador = new parallelVersionWithFJ.ClassifierGA(data, dataOutput, variables);
+		// parallelVersionWithFJ.ClassifierGA classificador = new parallelVersionWithFJ.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela com Phasers
 		// parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela de Ilhas
-//		parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
-		
+		parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
+
 		classificador.startClassification();
 	}
 }

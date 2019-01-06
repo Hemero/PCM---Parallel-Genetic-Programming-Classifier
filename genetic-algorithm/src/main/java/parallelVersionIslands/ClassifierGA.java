@@ -38,8 +38,22 @@ public class ClassifierGA {
 
 		} while (qtdIlhas <= 0 || qtdIlhas > AMOUNT_THREADS);
 		
-		Island[] lihas = new Island[qtdIlhas];
+		Island[] ilhas = new Island[qtdIlhas];
 		
+		for (int islandId = 0; islandId < qtdIlhas; islandId++) {
+		
+			ilhas[islandId] = new Island(islandId, data, dataOutput, variables, ilhas);
+			ilhas[islandId].start();
+		}
+			
+		for (Island ilha : ilhas) {
+			try {
+				ilha.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+			
 		System.out.println("Classification has terminated.");
 	}
 }
