@@ -30,13 +30,13 @@ public class Tests {
 		 Random random = new Random();
 
 		 int CROSS_OVER_VARIATION = 0;
-		 int POPULATION_SIZE = 1000;
+		 int AMOUNT_POPULATION = 1000;
 		 
 		 // Propused New formula for crossOver
-		 System.out.println((int) ((Math.abs(random.nextGaussian()) * ((POPULATION_SIZE / 3) + CROSS_OVER_VARIATION)) % POPULATION_SIZE));
+		 System.out.println((int) Math.abs(((Math.abs(random.nextGaussian()) * (AMOUNT_POPULATION / 3.0) + CROSS_OVER_VARIATION) % AMOUNT_POPULATION)));
 		 
 		 // Old formula for crossOver
-		 System.out.println((int) ((-Math.log(random.nextDouble())) * POPULATION_SIZE) % POPULATION_SIZE);
+		 System.out.println((int) ((-Math.log(random.nextDouble())) * AMOUNT_POPULATION) % AMOUNT_POPULATION);
 
 		 // Comparing two formulas to check how similar they are
 		 NormalizedLevenshtein  l = new NormalizedLevenshtein (); 
