@@ -17,12 +17,17 @@ public class ClassifierGA {
 	private static final int AMOUNT_POPULATION = 1000;
 
 	// Operations Constants
-	private static final double MUTATION_RATE = 0.1;
 	private static final int SPLIT_THRESHOLD = 100;
+	private static final double MUTATION_OFFSET = 0.05;
+	private static final double CROSS_OVER_OFFSET = AMOUNT_POPULATION / 100.0;
 
 	// Atributos
 	private ExpressionTree[] population;
 
+	// Atributos de variacao 
+	private double mutationRate;
+	private double crossOverRate;
+	
 	// Data-set information
 	private double[][] data;
 	private double[] dataOutput;
@@ -42,6 +47,9 @@ public class ClassifierGA {
 
 		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
 
+		this.mutationRate = 0.1;
+		this.crossOverRate = 0.0;
+		
 		// 0. Gerar a populacao inicial
 		generatePopulation();
 	}
@@ -58,8 +66,8 @@ public class ClassifierGA {
 		// Sort das arvores por ordem descendente
 		Arrays.sort(this.population);
 		
-		System.out.println("Best individual at generation 0 with fitness " +
-							this.population[0].getFitness() + ": " + this.population[0]);
+		System.out.format("Best individual at generation 0 with fitness %.6f: %s%n",
+							this.population[0].getFitness(), this.population[0]);
 
 		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
@@ -67,9 +75,8 @@ public class ClassifierGA {
 			for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
 				newPopulation[i] = this.population[i];
 		
-			// Gather the rest of the sons into the array
-			for (int j = 0; j < AMOUNT_POPULATION; j++)
-				operations(newPopulation, j, geracao);
+			// Gather the rest of the offspring into the array
+			computeOffsprings(newPopulation, geracao);
 
 			// Sort the new population
 			Arrays.sort(newPopulation);
@@ -77,31 +84,104 @@ public class ClassifierGA {
 			// Set the new population
 			this.population = newPopulation;
 			
-			System.out.println("Best individual at generation " + geracao + 
-							   " with fitness " + this.population[0].getFitness() + 
-							   ": " + this.population[0]);
-
+			System.out.format("Best individual at generation %d with fitness %.6f: %s%n",
+							   geracao, this.population[0].getFitness(), this.population[0]);
+			
 			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}
 	}
 
-	private void operations(ExpressionTree[] newPopulation, int j, int geracao) {
-
+	private void computeOffsprings(ExpressionTree[] newPopulation, int geracao) {
+		
+		// Auxiliary variables for adapting crossOver and Mutation Rates
+		double crossOverProgress = 0.0;
+		double mutationProgress = 0.0;
+		
+		int amountMutations = 0;
+		
+		double[] resultadoOperations;
+		
+		// Compute the operations
+		for (int j = 0; j < AMOUNT_POPULATION; j++) {
+		
+			resultadoOperations = operations(newPopulation, j, geracao);
+			
+			crossOverProgress += resultadoOperations[0];
+			
+			// If it also contains a mutation progress
+			if (resultadoOperations.length == 2) {
+				
+				mutationProgress += resultadoOperations[1];
+				amountMutations++;
+			}
+		}
+		
+		crossOverProgress = crossOverProgress / (AMOUNT_POPULATION - TOP_AMOUNT_ELITES);
+		
+		if (amountMutations > 0)
+			mutationProgress = mutationProgress / amountMutations;
+		
+		// Set up the new crossOver and mutation ratios
+		if (crossOverProgress < mutationProgress) {
+			
+			this.mutationRate = Math.min(1.0, this.mutationRate + MUTATION_OFFSET);
+			this.crossOverRate = Math.max(-AMOUNT_POPULATION, this.crossOverRate - CROSS_OVER_OFFSET);
+		}
+		
+		else if (crossOverProgress > mutationProgress) {
+			
+			this.mutationRate = Math.max(MUTATION_OFFSET, this.mutationRate - MUTATION_OFFSET);
+			this.crossOverRate = Math.min(AMOUNT_POPULATION, this.crossOverRate + CROSS_OVER_OFFSET);
+		}
+	}
+	
+	private double[] operations(ExpressionTree[] newPopulation, int j, int geracao) {
+		
+		double[] resultado = new double[1];
+		
+		double crossOverProgress;
+		
+		double mutationProgress;
+		double oldIndividualFitness;
+		
 		if (j >= TOP_AMOUNT_ELITES) {
 			// CrossOver
-			int parent1 = (int) (- Math.log(random.nextDouble()) * AMOUNT_POPULATION) % AMOUNT_POPULATION;
-			int parent2 = (int) (- Math.log(random.nextDouble()) * AMOUNT_POPULATION) % AMOUNT_POPULATION;
+			int parent1 = (int) Math.abs(((Math.abs(random.nextGaussian()) * ((AMOUNT_POPULATION / 3) + this.crossOverRate)) % AMOUNT_POPULATION));
+			int parent2 = (int) Math.abs(((Math.abs(random.nextGaussian()) * ((AMOUNT_POPULATION / 3) + this.crossOverRate)) % AMOUNT_POPULATION));
 
 			newPopulation[j] = this.population[parent1].crossOverWith(this.population[parent2]);
-
+			
+			// Measure the new individual fitness
+			measureFitness(newPopulation[j], geracao);
+			
+			crossOverProgress = newPopulation[j].getFitness() - ((this.population[parent1].getFitness() + this.population[parent2].getFitness()) / 2.0);
+			
+			// Assign the crossOverProgress to result
+			resultado[0] = crossOverProgress;
+			
 			// Mutacao
-			if (random.nextDouble() < MUTATION_RATE) {
-				newPopulation[j].mutate();
+			if (random.nextDouble() < this.mutationRate) {
+				
+				// Keep the old individual fitness
+				oldIndividualFitness = newPopulation[j].getFitness();
+
+				newPopulation[j] = newPopulation[j].mutate();
+
+				// Re-measure the new individual fitness after fitness
+				measureFitness(newPopulation[j], geracao);
+	
+				mutationProgress = newPopulation[j].getFitness() - oldIndividualFitness;
+				
+				// Re-assign the output so it has the mutationProgress
+				resultado = new double[] {crossOverProgress, mutationProgress};
 			}
 		}
 
-		// Calcular o Fitness
-		measureFitness(newPopulation[j], geracao);
+		// Measure topAmountElites fitness
+		else
+			measureFitness(newPopulation[j], geracao);
+		
+		return resultado;
 	}
 
 	private void generatePopulation() {

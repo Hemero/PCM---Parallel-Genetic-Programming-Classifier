@@ -15,7 +15,7 @@ public class Main {
 		String[] variables = loadData.getVariables();
 	
 		// Versao linear
-		// linearVersion.ClassifierGA classificador = new linearVersion.ClassifierGA(data, dataOutput, variables);
+		linearVersion.ClassifierGA classificador = new linearVersion.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela com Fork Join
 		// parallelVersionWithFJ.ClassifierGA classificador = new parallelVersionWithFJ.ClassifierGA(data, dataOutput, variables);
@@ -24,7 +24,7 @@ public class Main {
 		// parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela de Ilhas
-		parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
+		// parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
 
 		classificador.startClassification();
 	}
