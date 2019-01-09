@@ -40,6 +40,6 @@ public class Tests {
 
 		 // Comparing two formulas to check how similar they are
 		 NormalizedLevenshtein  l = new NormalizedLevenshtein (); 
-		 System.out.println(l.distance(tree2.toString(), crossed.toString()));
+		 System.out.println("% Difference: " + l.distance(tree.toString(), crossed.toString()));
 	}
 }

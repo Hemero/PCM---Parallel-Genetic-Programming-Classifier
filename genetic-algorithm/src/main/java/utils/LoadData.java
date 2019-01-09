@@ -1,21 +1,20 @@
 package utils;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.ArrayList;
+import java.util.List;
 
-import com.opencsv.CSVReader;
 
 public class LoadData {
 
 	// Atributos
 	private double[][] trainingData;
 	private double[][] testData;
-	private double[] classes;
+	private double[] testDataOutput;
 	private double[] dataOutput;
 	private String[] variables;
 
@@ -31,53 +30,57 @@ public class LoadData {
 	public LoadData(String fileName) {
 
 		List<Double[]> dataTemp = new ArrayList<>();
-		List<Double> dataOutputTemp = new ArrayList<>();
-		List<Double> classesTemp = new ArrayList<>();
 		
-		try (CSVReader reader = new CSVReader(new FileReader(fileName));) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName));) {
 			
-			// Ler a primeira linha que correspondem as variaveis
-			String[] linha = reader.readNext()[0].split(";");
+			String linha;
+			String[] linhaSplit;
 			
-			this.variables = new String[linha.length - 1];
-			System.arraycopy(linha, 0, this.variables, 0, linha.length - 1);
-			
-			while((linha = reader.readNext()) != null) {
-				
-				linha = linha[0].split(";");
+			while((linha = reader.readLine()) != null) {
+
+				linhaSplit = linha.split(" +");
 				
 				// ------------------ Adicionar ao data ------------------ 
-				Double[] dataSemClasses = new Double[linha.length - 1];
+				Double[] data = new Double[linhaSplit.length - 1];
 				
-				for (int i = 0; i < dataSemClasses.length; i++)
-					dataSemClasses[i] = Double.parseDouble(linha[i]);
+				for (int i = 1; i <= data.length; i++) {
+					data[i - 1] = Double.parseDouble(linhaSplit[i]);
+				}
 				
-				dataTemp.add(dataSemClasses);
-				
-				// ------------------ Adicionar ao dataOutput ------------------ 
-				double classeDaLinha = Double.parseDouble(linha[linha.length - 1]);
-				
-				dataOutputTemp.add(classeDaLinha);
-				
-				// ------------------ Adicionar as classes ------------------ 
-				if (!classesTemp.contains(classeDaLinha))
-					classesTemp.add(classeDaLinha);
+				dataTemp.add(data);
 			}
 			
+			// Shuffle do dataSet
 			Collections.shuffle(dataTemp);
 			
-			int trainingSize = (int) Math.floor(dataTemp.size()*0.7);
+			// Split the data set size
+			int trainingSize = (int) Math.floor(dataTemp.size() * 0.7);
+			
+			// Variables
+			this.variables = new String[dataTemp.get(0).length];
+			
+			// Variables of training data
 			this.trainingData = new double[trainingSize][dataTemp.get(0).length];
+			this.dataOutput = new double[trainingSize];
+			
+			// Variables of test data
 			this.testData = new double[dataTemp.size() - trainingSize][dataTemp.get(0).length];
+			this.testDataOutput = new double[dataTemp.size() - trainingSize];
 			
-			for (int i = 0; i < trainingSize; i++)
-				this.trainingData[i] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
+			// Set the training set and data training output set
+			for (int i = 0; i < trainingSize; i++) {
+				this.trainingData[i] = Arrays.stream(Arrays.copyOfRange(dataTemp.get(i), 0, dataTemp.get(i).length - 1)).mapToDouble(Double::doubleValue).toArray();
+				this.dataOutput[i] = dataTemp.get(i)[dataTemp.get(i).length - 1];
+			}
 			
-			for (int i = trainingSize; i < dataTemp.size(); i++)
-				this.testData[i - trainingSize] = Arrays.stream(dataTemp.get(i)).mapToDouble(Double::doubleValue).toArray();
-
-			this.dataOutput = dataOutputTemp.stream().mapToDouble(i -> i).toArray();
-			this.classes = classesTemp.stream().mapToDouble(i -> i).toArray();
+			// Set the test data and data test output set
+			for (int i = trainingSize; i < dataTemp.size(); i++) {
+				this.testData[i - trainingSize] = Arrays.stream(Arrays.copyOfRange(dataTemp.get(i), 0, dataTemp.get(i).length - 1)).mapToDouble(Double::doubleValue).toArray();
+				this.testDataOutput[i - trainingSize] = dataTemp.get(i)[dataTemp.get(i).length - 1];
+			}
+			
+			for (int i = 0; i < this.variables.length; i++)
+				this.variables[i] = "x" + i;
 		} 
 		
 		catch (IOException e) {
@@ -85,19 +88,25 @@ public class LoadData {
 		}
 	}
 	
-	// Getters
+	// Getters for training data
 	public double[] getDataOutput() {
 		return dataOutput;
-	}
-
-	public double[] getClasses() {
-		return classes;
 	}
 
 	public double[][] getData() {
 		return trainingData;
 	}
 
+	// Getters for test data
+	public double[] getTestDataOutput() {
+		return this.testDataOutput;
+	}
+	
+	public double[][] getTestData() {
+		return this.testData;
+	}
+	
+	// Getter for variables
 	public String[] getVariables() {
 		return variables;
 	}
