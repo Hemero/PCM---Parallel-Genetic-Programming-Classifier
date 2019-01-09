@@ -146,8 +146,8 @@ public class ClassifierGAAdaptative {
 		
 		if (j >= TOP_AMOUNT_ELITES) {
 			// CrossOver
-			int parent1 = (int) Math.abs(((Math.abs(random.nextGaussian()) * (AMOUNT_POPULATION / 3.0) + this.crossOverRate) % AMOUNT_POPULATION));
-			int parent2 = (int) Math.abs(((Math.abs(random.nextGaussian()) * (AMOUNT_POPULATION / 3.0) + this.crossOverRate) % AMOUNT_POPULATION));
+			int parent1 = (int) Math.abs(((Math.abs(random.nextGaussian()) * (AMOUNT_POPULATION / 3.0  + this.crossOverRate)) % AMOUNT_POPULATION));
+			int parent2 = (int) Math.abs(((Math.abs(random.nextGaussian()) * (AMOUNT_POPULATION / 3.0 + this.crossOverRate)) % AMOUNT_POPULATION));
 
 			newPopulation[j] = this.population[parent1].crossOverWith(this.population[parent2]);
 			
