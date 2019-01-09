@@ -116,7 +116,7 @@ public class ClassifierGA {
 		int endTrainingSet = this.getEndTrainingSet(geracao);
 		
 		Expression express = tree.getExpression();
-		
+
 		double fitness = 0;
 
 		for (int row = beginTrainingSet; row < endTrainingSet; row++) {

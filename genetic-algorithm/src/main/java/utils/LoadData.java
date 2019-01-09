@@ -57,7 +57,7 @@ public class LoadData {
 			int trainingSize = (int) Math.floor(dataTemp.size() * 0.7);
 			
 			// Variables
-			this.variables = new String[dataTemp.get(0).length];
+			this.variables = new String[dataTemp.get(0).length - 1];
 			
 			// Variables of training data
 			this.trainingData = new double[trainingSize][dataTemp.get(0).length];

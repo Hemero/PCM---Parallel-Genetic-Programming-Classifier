@@ -24,6 +24,7 @@ public class Main {
 		double[][] test = loadData.getTestData();
 		double[] testOutput = loadData.getTestDataOutput();
 		
+		
 		// Versao linear
 		// linearVersion.ClassifierGA classificador = new linearVersion.ClassifierGA(data, dataOutput, variables);
 		// linearVersion.ClassifierGAAdaptative classificador = new linearVersion.ClassifierGAAdaptative(data, dataOutput, variables);
@@ -32,13 +33,13 @@ public class Main {
 		// parallelVersionWithFJ.ClassifierGA classificador = new parallelVersionWithFJ.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela com Phasers
-		parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
+		// parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela de Ilhas
-		// parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
+		 parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
 
-		TestsetHandler testHandler = new TestsetHandler(test, testOutput, new ExpressionTree(variables), variables);
-		System.out.println(testHandler.getError());
+//		TestsetHandler testHandler = new TestsetHandler(test, testOutput, new ExpressionTree(variables), variables);
+//		System.out.println(testHandler.getError());
 		
 		classificador.startClassification();
 	}

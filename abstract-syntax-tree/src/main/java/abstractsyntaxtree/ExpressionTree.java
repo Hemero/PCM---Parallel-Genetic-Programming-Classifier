@@ -230,7 +230,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 		// if not generate a constant
 		double prob = rand.nextDouble();
 
-		if (prob < constVarGen) {
+		if (prob < 0.75) {
 			// root will be one of the variable names
 			node = new ConstantTreeNode(generateVariableName());
 		} else {
@@ -504,7 +504,7 @@ public class ExpressionTree implements ExpressionTreeInterface {
 	 */
 	@Override
 	public Expression getExpression() {
-
+		
 		Expression expression = new ExpressionBuilder(this.toString())
 				.variables(this.variables)
 				.build();

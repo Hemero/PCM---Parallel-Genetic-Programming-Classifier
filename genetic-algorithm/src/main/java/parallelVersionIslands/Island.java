@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang3.tuple.Pair;
 
 import abstractsyntaxtree.ExpressionTree;
+import net.objecthunter.exp4j.Expression;
 import utils.ParallelMergeSort;
 
 /**
@@ -22,19 +23,19 @@ public class Island extends Thread {
 	private static final int AMOUNT_THREADS = Runtime.getRuntime().availableProcessors();
 	
 	// Constantes das definicoes do programa
-	private static final int SPLIT_THRESHOLD = 100;
-	public static final int AMOUNT_ITERATIONS = 1000;
+	private static final int SPLIT_THRESHOLD = 20;
+	public static final int AMOUNT_ITERATIONS = 50;
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 	private static final int EXCHANGE_EXPRESSIONS_RATE = 20;
 	
 	// Constantes da populacao
 	private static final double MUTATION_RATE = 0.1;
 	private static final int TOP_AMOUNT_ELITES = 1;
-	private static final int AMOUNT_POPULATION = 1000;
 	
 	
 	// Atributos da Ilha
 	private int islandId;
+	private int amountPopulation;
 	private ExpressionTree[] population;
 	private ConcurrentLinkedQueue<Pair<Integer,Integer>> threadBuffer;
 	private ConcurrentLinkedQueue<ExpressionTree> expressionsBuffer;
@@ -51,19 +52,22 @@ public class Island extends Thread {
 	private int lowLimit;
 	private int highLimit;
 	
+	private int amountPartsTrainingSet;
+	
 	private Phaser phaser;
 	private ThreadLocalRandom random;
 	
-	public Island(int islandId, double[][] data, double[] dataOutput, String[] variables,
-				   Island[] otherIslands) {
+	public Island(int islandId, double[][] data, double[] dataOutput, int amountPopulation, 
+				  String[] variables, Island[] otherIslands) {
 		
 		this.islandId = islandId;
+		this.amountPopulation = amountPopulation;
 		
 		this.data = data;
 		this.variables = variables;
 		this.dataOutput = dataOutput;
 		
-		this.population = new ExpressionTree[AMOUNT_POPULATION];
+		this.population = new ExpressionTree[amountPopulation];
 		
 		this.otherIslands = otherIslands;
 		this.availableOtherIslands = new int[this.otherIslands.length];
@@ -83,7 +87,8 @@ public class Island extends Thread {
 		this.expressionsBuffer = new ConcurrentLinkedQueue<>();
 		
 		this.random = ThreadLocalRandom.current();
-
+		
+		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
 	}
 	
 	/**
@@ -105,7 +110,9 @@ public class Island extends Thread {
 			if (threadId == quantidadeThreads)
 				endLimit = this.population.length;
 			
-			this.innerIslandThreads.add(new InnerIslandThread(threadId, startLimit, endLimit, 0, phaser));
+			this.innerIslandThreads.add(new InnerIslandThread(startLimit, endLimit, 0, 
+										this.amountPopulation, this.data, this.dataOutput, 
+										this.variables, this.population, this.phaser));
 			this.innerIslandThreads.get(threadId - 1).start();
 		}
 	}
@@ -116,31 +123,45 @@ public class Island extends Thread {
 		// 1. Create the population
 		this.generatePopulation();
 		
+		// 1.5 Measure the new population fitness
+		for (int i = 0; i < this.population.length; i++)
+			measureFitness(this.population[i], 0);
+		
 		// 2. Sort the population
 		this.sortPopulation();
 		
 		this.phaser.arriveAndAwaitAdvance();
 		
 		// Create the new population
-		ExpressionTree[] newPopulation = new ExpressionTree[AMOUNT_POPULATION];
+		ExpressionTree[] newPopulation = new ExpressionTree[this.amountPopulation];
 		
 		for (int geracao = 0; geracao < AMOUNT_ITERATIONS; geracao++) {
 
 			// Exchange with another island
 			if (geracao % EXCHANGE_EXPRESSIONS_RATE == 0) {
 				// Choose a random island
+				int chosenIsland = this.random.nextInt(this.otherIslands.length);
+				
+				if (chosenIsland == this.islandId)
+					chosenIsland = (chosenIsland + 1) % this.otherIslands.length;
+				
 				// Send best individual to that island
+				this.otherIslands[chosenIsland].sendExpression(this.population[0]);
 			}
 			
 			// Copy the elite expression trees to the new population
-			// TODO
+			for (int i = 0; i < TOP_AMOUNT_ELITES; i++)
+				newPopulation[i] = this.population[i];
 			
 			// Generate the new population from the previous one
-			// TODO
+			for (int j = this.lowLimit; j < this.highLimit; j++)
+				operations(newPopulation, j, geracao);
 			
-			this.phaser.arriveAndAwaitAdvance();
 			// Transition from the previous generation to the new one
-			// TODO
+			this.phaser.arriveAndAwaitAdvance();
+			
+			for (int i = this.lowLimit; i < this.highLimit; i++)
+				this.population[i] = newPopulation[i];
 			
 			// Sort the current population
 			this.phaser.arriveAndAwaitAdvance();
@@ -154,7 +175,7 @@ public class Island extends Thread {
 			
 			this.phaser.arriveAndAwaitAdvance();
 			
-			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
+			newPopulation = new ExpressionTree[this.amountPopulation];
 		}
 		
 		
@@ -173,11 +194,21 @@ public class Island extends Thread {
 			quantidadeThreadsDisponiveis--;
 			indice = (this.otherIslands.length + (indice - 1)) % this.otherIslands.length;
 		}
+		
+		for (InnerIslandThread thread : this.innerIslandThreads)
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		System.out.println("Island " + this.islandId + " has ended.");
 	}
 
 	private void generatePopulation() {
 		
-		for (int i =  0; i < AMOUNT_POPULATION; i++)
+		for (int i =  0; i < this.population.length; i++)
 			this.population[i] = new ExpressionTree(this.variables);
 	}
 
@@ -202,7 +233,9 @@ public class Island extends Thread {
 		// Criar as novas threads
 		while (amountThreads > 0) {
 			
-			InnerIslandThread newThread = new InnerIslandThread(this.innerIslandThreads.size(), -1, -1, geracao, phaser);
+			InnerIslandThread newThread = new InnerIslandThread(-1, -1, geracao, this.amountPopulation,
+										this.data, this.dataOutput, this.variables, 
+										this.population, this.phaser);
 			this.innerIslandThreads.add(newThread);
 			
 			this.phaser.register();
@@ -235,5 +268,89 @@ public class Island extends Thread {
 	public void sendCreateThreads(int amount) {
 		
 		this.threadBuffer.add(Pair.of(this.islandId, amount));
+	}
+
+	private void operations(ExpressionTree[] newPopulation, int j, int geracao) {
+
+		if (j >= TOP_AMOUNT_ELITES) {
+			// CrossOver
+			int parent1 = (int) (- Math.log(random.nextDouble()) * this.population.length) % this.population.length;
+			int parent2 = (int) (- Math.log(random.nextDouble()) * this.population.length) % this.population.length;
+
+			newPopulation[j] = this.population[parent1].crossOverWith(this.population[parent2]);
+
+			// Mutacao
+			if (random.nextDouble() < MUTATION_RATE) {
+				newPopulation[j].mutate();
+			}
+		}
+
+		// Calcular o Fitness
+		measureFitness(newPopulation[j], geracao);
+	}
+	
+	private double measureFitness(ExpressionTree tree, int geracao) {
+
+		int beginTrainingSet = this.getBeginningTrainingSet(geracao);
+		int endTrainingSet = this.getEndTrainingSet(geracao);
+		
+		Expression express = tree.getExpression();
+		
+		double fitness = 0;
+
+		for (int row = beginTrainingSet; row < endTrainingSet; row++) {
+
+			setVariablesExpression(row, express);	
+
+			try {
+
+				double expressionEvaluation = express.evaluate();
+				fitness += Math.pow(expressionEvaluation - dataOutput[row], 2);
+
+			} catch (ArithmeticException ae) {
+				// assume error is really big
+				fitness += Integer.MAX_VALUE;
+			}
+		}
+
+		fitness = Math.sqrt(fitness / (endTrainingSet - beginTrainingSet));
+
+		tree.setFitness(fitness);
+
+		return fitness;
+	}
+
+	private void setVariablesExpression(int row, Expression express) {
+
+		for (int col = 0; col < data[row].length; col++) {
+			express.setVariable(variables[col], data[row][col]);
+		}
+	}
+	
+	private int getBeginningTrainingSet(int geracao) {
+		
+		int resultado = 0;
+		
+		// Keep splitting until the threshold is reached
+		if (geracao <= SPLIT_THRESHOLD)
+			resultado = (geracao % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet);
+		
+		return resultado;
+	}
+	
+	private int getEndTrainingSet(int geracao) {
+		
+		int resultado = this.data.length;
+
+		// Keep splitting until the threshold is reached
+		if (geracao <= SPLIT_THRESHOLD) {
+			
+			resultado = (((geracao + 1) % this.amountPartsTrainingSet) * (this.data.length / this.amountPartsTrainingSet));
+
+			if (((geracao + 1) % this.amountPartsTrainingSet) == 0)
+				resultado = this.data.length;
+		}
+		
+		return resultado;
 	}
 }

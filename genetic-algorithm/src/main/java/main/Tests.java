@@ -5,12 +5,16 @@ import java.util.Random;
 
 import abstractsyntaxtree.ExpressionTree;
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
+import net.objecthunter.exp4j.Expression;
+import utils.LoadData;
 
 public class Tests {
 
 	public static void main(String[] args) {
+
+		LoadData loadData = new LoadData("../toxicity/ld50.txt");
 		
-		String[] vars = {"x", "y", "z"};
+		String[] vars = loadData.getVariables();
 		
 		ExpressionTree tree = new ExpressionTree(vars);
 		ExpressionTree tree2 = new ExpressionTree(vars);
@@ -26,6 +30,8 @@ public class Tests {
 		
 		ExpressionTree mutatedTree = crossedClone.mutate();
 		System.out.println("Mutated Tree: " + mutatedTree);
+		
+		Expression asd = tree.getExpression();
 		
 		 Random random = new Random();
 

@@ -40,12 +40,19 @@ public class ClassifierGA {
 		
 		Island[] ilhas = new Island[qtdIlhas];
 		
+		int amountPopulation = AMOUNT_POPULATION / qtdIlhas;
+		
 		for (int islandId = 0; islandId < qtdIlhas; islandId++) {
 		
-			ilhas[islandId] = new Island(islandId, data, dataOutput, variables, ilhas);
-			ilhas[islandId].start();
+			if (islandId == qtdIlhas - 1)
+				amountPopulation += AMOUNT_POPULATION % qtdIlhas;
+			
+			ilhas[islandId] = new Island(islandId, data, dataOutput, amountPopulation, variables, ilhas);
 		}
 			
+		for (Island ilha : ilhas)
+			ilha.start();
+		
 		for (Island ilha : ilhas) {
 			try {
 				ilha.join();
