@@ -134,7 +134,7 @@ public class ClassifierGA {
 			}
 		}
 
-		fitness = Math.sqrt(fitness) / (endTrainingSet - beginTrainingSet);
+		fitness = Math.sqrt(fitness / (endTrainingSet - beginTrainingSet));
 
 		tree.setFitness(fitness);
 
