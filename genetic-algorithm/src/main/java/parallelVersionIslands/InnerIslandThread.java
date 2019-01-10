@@ -84,9 +84,7 @@ public class InnerIslandThread extends Thread {
 			newPopulation = new ExpressionTree[this.amountPopulation];
 		}
 
-		System.out.println("TERMINOU!!");
 		phaser.arriveAndAwaitAdvance();
-		System.out.println("APOS TERMINOU!!");
 	}
 	
 	public void setStartLimit(int startLimit) {

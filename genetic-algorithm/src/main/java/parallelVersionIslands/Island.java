@@ -188,13 +188,15 @@ public class Island extends Thread {
 		
 		while(quantidadeThreadsDisponiveis > 0) {
 			
-			if (this.availableOtherIslands[indice] == 0 && indice != this.islandId)
+			if (this.availableOtherIslands[indice] == 0 && indice != this.islandId) {
 				this.otherIslands[indice].sendCreateThreads(1);
+				quantidadeThreadsDisponiveis--;
+			}
 			
-			quantidadeThreadsDisponiveis--;
 			indice = (this.otherIslands.length + (indice - 1)) % this.otherIslands.length;
 		}
-		
+
+	
 		for (InnerIslandThread thread : this.innerIslandThreads)
 			try {
 				thread.join();
@@ -202,8 +204,6 @@ public class Island extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
-		System.out.println("Island " + this.islandId + " has ended.");
 	}
 
 	private void generatePopulation() {
@@ -233,7 +233,7 @@ public class Island extends Thread {
 		// Criar as novas threads
 		while (amountThreads > 0) {
 			
-			InnerIslandThread newThread = new InnerIslandThread(-1, -1, geracao, this.amountPopulation,
+			InnerIslandThread newThread = new InnerIslandThread(-1, -1, geracao + 1, this.amountPopulation,
 										this.data, this.dataOutput, this.variables, 
 										this.population, this.phaser);
 			this.innerIslandThreads.add(newThread);
