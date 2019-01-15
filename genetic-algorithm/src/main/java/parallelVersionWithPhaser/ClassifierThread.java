@@ -48,7 +48,7 @@ public class ClassifierThread extends Thread {
 		this.dataOutput = dataOutput;
 		this.variables = variables;
 
-		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
+		this.amountPartsTrainingSet = this.data.length / TRAINING_SET_SPLIT_SIZE + 1;
 		
 		this.phaser = phaser;
 		this.population = population;

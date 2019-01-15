@@ -29,7 +29,7 @@ public class ClassifierGA {
 		this.variables = variables;
 		this.population = new ExpressionTree[AMOUNT_POPULATION];
 
-		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
+		this.amountPartsTrainingSet = this.data.length / TRAINING_SET_SPLIT_SIZE + 1;
 
 		GeneratePopulation generatePopulationAction =
 				new GeneratePopulation(population, this.variables, 0, AMOUNT_POPULATION);

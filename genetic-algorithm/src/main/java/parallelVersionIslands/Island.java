@@ -88,7 +88,8 @@ public class Island extends Thread {
 		
 		this.random = ThreadLocalRandom.current();
 		
-		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
+
+		this.amountPartsTrainingSet = this.data.length / TRAINING_SET_SPLIT_SIZE + 1;
 	}
 	
 	/**

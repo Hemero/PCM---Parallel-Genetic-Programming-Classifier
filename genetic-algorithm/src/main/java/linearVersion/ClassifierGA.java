@@ -40,7 +40,7 @@ public class ClassifierGA {
 		this.random = new Random();
 		this.population = new ExpressionTree[AMOUNT_POPULATION];
 
-		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
+		this.amountPartsTrainingSet = this.data.length / TRAINING_SET_SPLIT_SIZE + 1;
 
 		// 0. Gerar a populacao inicial
 		generatePopulation();
