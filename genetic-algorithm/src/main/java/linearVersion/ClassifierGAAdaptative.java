@@ -45,7 +45,7 @@ public class ClassifierGAAdaptative {
 		this.random = new Random();
 		this.population = new ExpressionTree[AMOUNT_POPULATION];
 
-		this.amountPartsTrainingSet = Math.max(1, this.data.length / TRAINING_SET_SPLIT_SIZE);
+		this.amountPartsTrainingSet = this.data.length / TRAINING_SET_SPLIT_SIZE + 1;
 
 		this.mutationRate = 0.1;
 		this.crossOverRate = 0.0;
