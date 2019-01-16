@@ -58,9 +58,10 @@ public class ClassifierGA {
 		// Sort das arvores por ordem descendente
 		Arrays.sort(this.population);
 		
-		System.out.println("Best individual at generation 0 with fitness " +
-							this.population[0].getFitness() + ": " + this.population[0]);
-
+//		System.out.println("Best individual at generation 0 with fitness " +
+//							this.population[0].getFitness() + ": " + this.population[0]);
+		System.out.println(0 + ";" + this.population[0].getFitness());
+		
 		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
 			// Copy the TOP_AMOUNT_ELITES to the new population
@@ -77,10 +78,10 @@ public class ClassifierGA {
 			// Set the new population
 			this.population = newPopulation;
 			
-			System.out.println("Best individual at generation " + geracao + 
-							   " with fitness " + this.population[0].getFitness() + 
-							   ": " + this.population[0]);
-
+//			System.out.println("Best individual at generation " + geracao + 
+//							   " with fitness " + this.population[0].getFitness() + 
+//							   ": " + this.population[0]);
+			System.out.println(geracao + ";" + this.population[0].getFitness());
 			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}
 	}
@@ -173,5 +174,10 @@ public class ClassifierGA {
 		}
 		
 		return resultado;
+	}
+
+	public ExpressionTree getBestIndividual() {
+
+		return this.population[0];
 	}
 }
