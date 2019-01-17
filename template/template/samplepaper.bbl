@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{GPTIPS}
+Dominic, P., Leahy, D., Willis, M.: Gptips:an open source genetic programming
+  toolbox for multigene symbolic regression. Lecture Notes in Engineering and
+  Computer Science  \textbf{2180} (12 2010)
+
+\bibitem{jenetics}
+Wilhelmstötter, F.: Jenetics: Library user's manual 4.3 (2018),
+  \url{https://books.google.pt/books?id=6Y-5BQAAQBAJ}
+
+\end{thebibliography}
