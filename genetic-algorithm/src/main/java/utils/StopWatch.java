@@ -37,6 +37,6 @@ public class StopWatch {
 	 */
 	public long getDuration() {
 		
-		return this.start - this.stop;
+		return this.stop - this.start;
 	}
 }
