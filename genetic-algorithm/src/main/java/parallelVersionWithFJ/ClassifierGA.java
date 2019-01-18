@@ -6,8 +6,8 @@ import utils.ParallelMergeSort;
 public class ClassifierGA {
 
 	// Constants
-	private static final int SPLIT_THRESHOLD = 100;
-	private static final int AMOUNT_ITERATIONS = 1000;
+	private static final int SPLIT_THRESHOLD = 250;
+	private static final int AMOUNT_ITERATIONS = 500;
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 
 	// Population Constants
@@ -51,8 +51,7 @@ public class ClassifierGA {
 		ParallelMergeSort sort = new ParallelMergeSort(0, AMOUNT_POPULATION, population);
 		sort.compute();
 
-		System.out.println("Best individual at generation 0 with fitness " +
-				this.population[0].getFitness() + ": " + this.population[0]);
+		System.out.println(0 + ";" + this.population[0].getFitness());
 
 		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
@@ -72,9 +71,7 @@ public class ClassifierGA {
 			// Set the new population
 			this.population = newPopulation;
 			
-			System.out.println("Best individual at generation " + geracao + 
-							   " with fitness " + this.population[0].getFitness() + 
-							   ": " + this.population[0]);
+			System.out.println(geracao + ";" + this.population[0].getFitness());
 
 			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}
@@ -106,5 +103,9 @@ private int getBeginningTrainingSet(int geracao) {
 		
 		return resultado;
 	}
-	
+
+	public ExpressionTree getBestIndividual() {
+		
+		return this.population[0];
+	}
 }

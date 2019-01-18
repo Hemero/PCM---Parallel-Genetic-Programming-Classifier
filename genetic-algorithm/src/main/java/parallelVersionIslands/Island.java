@@ -23,8 +23,8 @@ public class Island extends Thread {
 	private static final int AMOUNT_THREADS = Runtime.getRuntime().availableProcessors();
 	
 	// Constantes das definicoes do programa
-	private static final int SPLIT_THRESHOLD = 20;
-	public static final int AMOUNT_ITERATIONS = 50;
+	private static final int SPLIT_THRESHOLD = 250;
+	public static final int AMOUNT_ITERATIONS = 500;
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 	private static final int EXCHANGE_EXPRESSIONS_RATE = 20;
 	
@@ -167,11 +167,11 @@ public class Island extends Thread {
 			// Sort the current population
 			this.phaser.arriveAndAwaitAdvance();
 			this.sortPopulation();
-			System.out.format("Best individual at island %d, generation %d with fitness %f: %s%n", 
-							  this.islandId, geracao, this.population[0].getFitness(), this.population[0]);
+
+			// System.out.println(geracao + ";" + this.islandId + ";" + this.population[0].getFitness());
 			
 			// I can create some amount of threads which will be available
-			if (!this.threadBuffer.isEmpty()) 
+			if (this.highLimit - this.lowLimit > 10 && !this.threadBuffer.isEmpty()) 
 				this.createNewInnerIslandThreads(geracao);
 			
 			this.phaser.arriveAndAwaitAdvance();
@@ -353,5 +353,10 @@ public class Island extends Thread {
 		}
 		
 		return resultado;
+	}
+
+	public ExpressionTree getBestIndividual() {
+		
+		return this.population[0];
 	}
 }

@@ -11,8 +11,8 @@ public class ClassifierThread extends Thread {
 
 	// Constantes das definicoes do programa
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
-	private static final int SPLIT_THRESHOLD = 100;
-	private static final int AMOUNT_ITERATIONS = 1000;
+	private static final int SPLIT_THRESHOLD = 250;
+	private static final int AMOUNT_ITERATIONS = 500;
 	
 	// Constantes da populacao
 	private static final double MUTATION_RATE = 0.1;
@@ -99,9 +99,7 @@ public class ClassifierThread extends Thread {
 			// Sort the current population
 			if (this.threadId == 0) {
 				sortPopulation();
-				System.out.println("Best individual at generation " + geracao + 
-								   " with fitness " + this.population[0].getFitness() + 
-								   ": " + this.population[0]);
+				System.out.println(geracao + ";" + this.population[0].getFitness());
 			}
 			
 			// Wait for population to be sorted

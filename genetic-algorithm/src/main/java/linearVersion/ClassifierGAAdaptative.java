@@ -17,7 +17,7 @@ public class ClassifierGAAdaptative {
 	private static final int AMOUNT_POPULATION = 1000;
 
 	// Operations Constants
-	private static final int SPLIT_THRESHOLD = 100;
+	private static final int SPLIT_THRESHOLD = 250;
 	private static final double MUTATION_OFFSET = 0.05;
 	private static final double CROSS_OVER_OFFSET = AMOUNT_POPULATION * 0.025;
 
@@ -66,8 +66,9 @@ public class ClassifierGAAdaptative {
 		// Sort das arvores por ordem descendente
 		Arrays.sort(this.population);
 		
-		System.out.format("Best individual at generation 0 with fitness %.10f: %s%n",
-							this.population[0].getFitness(), this.population[0]);
+//		System.out.format("Best individual at generation 0 with fitness %.10f: %s%n",
+//							this.population[0].getFitness(), this.population[0]);
+		System.out.println(0 + ";" + this.population[0].getFitness());
 
 		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
@@ -84,8 +85,10 @@ public class ClassifierGAAdaptative {
 			// Set the new population
 			this.population = newPopulation;
 			
-			System.out.format("Best individual at generation %d with fitness %.10f: %s%n",
-							   geracao, this.population[0].getFitness(), this.population[0]);
+//			System.out.format("Best individual at generation %d with fitness %.10f: %s%n",
+//							   geracao, this.population[0].getFitness(), this.population[0]);
+
+			System.out.println(geracao + ";" + this.population[0].getFitness());
 			
 			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}
@@ -253,5 +256,10 @@ public class ClassifierGAAdaptative {
 		}
 		
 		return resultado;
+	}
+
+	public ExpressionTree getBestIndividual() {
+		
+		return this.population[0];
 	}
 }

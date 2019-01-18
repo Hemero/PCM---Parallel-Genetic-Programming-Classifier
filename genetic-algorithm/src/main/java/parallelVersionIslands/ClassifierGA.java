@@ -2,6 +2,8 @@ package parallelVersionIslands;
 
 import java.util.Scanner;
 
+import abstractsyntaxtree.ExpressionTree;
+
 public class ClassifierGA {
 
 	// Constantes
@@ -15,6 +17,8 @@ public class ClassifierGA {
 	private double[][] data;
 	private double[] dataOutput;
 	private String[] variables;
+	
+	private Island[] ilhas;
 	
 	public ClassifierGA(double[][] data, double[] dataOutput, String[] variables) {
 		
@@ -30,24 +34,26 @@ public class ClassifierGA {
 		Scanner leitor = new Scanner(System.in);
 		
 		do {
-			System.out.println("Introduza uma quantidade de ilhas inferior a " + AMOUNT_THREADS + ": ");
-			qtdIlhas = leitor.nextInt();
+			// System.out.println("Introduza uma quantidade de ilhas inferior a " + AMOUNT_THREADS + ": ");
+			qtdIlhas = 24;
 			
 			if (qtdIlhas <= 0 || qtdIlhas > AMOUNT_THREADS)
 				System.out.println(String.format(ERROR_QTD_ILHAS, qtdIlhas));
 
 		} while (qtdIlhas <= 0 || qtdIlhas > AMOUNT_THREADS);
 		
-		Island[] ilhas = new Island[qtdIlhas];
+		ilhas = new Island[qtdIlhas];
 		
 		int amountPopulation = AMOUNT_POPULATION / qtdIlhas;
-		
+
 		for (int islandId = 0; islandId < qtdIlhas; islandId++) {
 		
-			if (islandId == qtdIlhas - 1)
-				amountPopulation += AMOUNT_POPULATION % qtdIlhas;
+			int currentAmountPopulation = amountPopulation;
 			
-			ilhas[islandId] = new Island(islandId, data, dataOutput, amountPopulation, variables, ilhas);
+			if (AMOUNT_POPULATION % this.ilhas.length - islandId > 0)
+				currentAmountPopulation++;
+			
+			ilhas[islandId] = new Island(islandId, data, dataOutput, currentAmountPopulation, variables, ilhas);
 		}
 			
 		for (Island ilha : ilhas)
@@ -61,6 +67,17 @@ public class ClassifierGA {
 			}
 		}
 			
-		System.out.println("Classification has terminated.");
+		// System.out.println("Classification has terminated.");
+	}
+	
+	public ExpressionTree getBestIndividual() {
+		
+		ExpressionTree result = this.ilhas[0].getBestIndividual();
+		
+		for (Island ilha : this.ilhas)
+			if (ilha.getBestIndividual().getFitness() < result.getFitness())
+				result = ilha.getBestIndividual();
+		
+		return result;
 	}
 }

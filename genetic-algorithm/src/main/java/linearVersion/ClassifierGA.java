@@ -18,7 +18,7 @@ public class ClassifierGA {
 
 	// Operations Constants
 	private static final double MUTATION_RATE = 0.1;
-	private static final int SPLIT_THRESHOLD = 100;
+	private static final int SPLIT_THRESHOLD = 250;
 
 	// Atributos
 	private ExpressionTree[] population;

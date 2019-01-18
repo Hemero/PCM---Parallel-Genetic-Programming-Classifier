@@ -13,7 +13,7 @@ public class Main {
 	
 	private static final int AMOUNT_TESTS = 30;
 	
-	private static final String CHOOSEN_OUTPUT = "linear";
+	private static final String CHOOSEN_OUTPUT = "forkjoin";
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		
@@ -51,14 +51,14 @@ public class Main {
 		
 		
 		// Versao linear
-		linearVersion.ClassifierGA classificador = new linearVersion.ClassifierGA(data, dataOutput, variables);
+		// linearVersion.ClassifierGA classificador = new linearVersion.ClassifierGA(data, dataOutput, variables);
 		// linearVersion.ClassifierGAAdaptative classificador = new linearVersion.ClassifierGAAdaptative(data, dataOutput, variables);
 		
 		// Versao paralela com Fork Join
 		// parallelVersionWithFJ.ClassifierGA classificador = new parallelVersionWithFJ.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela com Phasers
-		// parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
+		parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela de Ilhas
 		// parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
@@ -71,11 +71,12 @@ public class Main {
 		TestsetHandler testHandler = new TestsetHandler(test, testOutput, bestIndividual, variables);
 		
 		System.out.flush();
-		System.setOut(new PrintStream(CHOOSEN_OUTPUT + "/" + CHOOSEN_OUTPUT + iteracao + "info.txt"));
 		
-		System.out.println("Best individual: " + bestIndividual.toString());
-		System.out.println("Duration: " + contador.getDuration());
-		System.out.println("Testset error: " + testHandler.getError());
+		System.setOut(new PrintStream(CHOOSEN_OUTPUT + "/" + CHOOSEN_OUTPUT + iteracao + "info.csv"));
+		
+		System.out.println("Best individual;" + bestIndividual.toString());
+		System.out.println("Duration;" + contador.getDuration());
+		System.out.println("Testset error;" + testHandler.getError());
 		
 		System.out.flush();
 	}

@@ -13,7 +13,7 @@ import net.objecthunter.exp4j.Expression;
 public class InnerIslandThread extends Thread {
 	
 	// Constantes das definicoes do programa
-	private static final int SPLIT_THRESHOLD = 100;
+	private static final int SPLIT_THRESHOLD = 250;
 	private static final int TRAINING_SET_SPLIT_SIZE = 100;
 	
 	// Constantes da populacao

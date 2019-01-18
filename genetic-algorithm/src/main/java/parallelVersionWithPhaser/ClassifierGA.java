@@ -15,6 +15,8 @@ public class ClassifierGA {
 	private double[] dataOutput;
 	private String[] variables;
 	
+	private ExpressionTree[] population;
+	
 	public ClassifierGA(double[][] data, double[] dataOutput, String[] variables) {
 		
 		this.data = data;
@@ -24,7 +26,7 @@ public class ClassifierGA {
 	
 	public void startClassification() {
 		
-		ExpressionTree[] population = new ExpressionTree[AMOUNT_POPULATION];
+		population = new ExpressionTree[AMOUNT_POPULATION];
 		ClassifierThread[] classifiers = new ClassifierThread[AMOUNT_THREADS];
 
 		int low = -1;
@@ -54,6 +56,11 @@ public class ClassifierGA {
 				e.printStackTrace();
 			}
 		
-		System.out.println("Classification has terminated.");
+		// System.out.println("Classification has terminated.");
+	}
+
+	public ExpressionTree getBestIndividual() {
+		
+		return this.population[0];
 	}
 }
