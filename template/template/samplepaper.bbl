@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
@@ -8,8 +8,59 @@ Dominic, P., Leahy, D., Willis, M.: Gptips:an open source genetic programming
   toolbox for multigene symbolic regression. Lecture Notes in Engineering and
   Computer Science  \textbf{2180} (12 2010)
 
+\bibitem{5340522}
+Espejo, P.G., Ventura, S., Herrera, F.: A survey on the application of genetic
+  programming to classification. IEEE Transactions on Systems, Man, and
+  Cybernetics, Part C (Applications and Reviews)  \textbf{40}(2),  121--144
+  (March 2010). \doi{10.1109/TSMCC.2009.2033566}
+
+\bibitem{etemadi2009genetic}
+Etemadi, H., Rostamy, A.A.A., Dehkordi, H.F.: A genetic programming model for
+  bankruptcy prediction: Empirical evidence from iran. Expert Systems with
+  Applications  \textbf{36}(2),  3199--3207 (2009)
+
+\bibitem{George:2012:GAB:2345396.2345426}
+George, A., Rajakumar, B.R., Binu, D.: Genetic algorithm based airlines booking
+  terminal open/close decision system. In: Proceedings of the International
+  Conference on Advances in Computing, Communications and Informatics. pp.
+  174--179. ICACCI '12, ACM, New York, NY, USA (2012).
+  \doi{10.1145/2345396.2345426},
+  \url{http://doi.acm.org/10.1145/2345396.2345426}
+
+\bibitem{grefenstette1985genetic}
+Grefenstette, J., Gopal, R., Rosmaita, B., Van~Gucht, D.: Genetic algorithms
+  for the traveling salesman problem. In: Proceedings of the first
+  International Conference on Genetic Algorithms and their Applications. pp.
+  160--168 (1985)
+
+\bibitem{krawiec2013genetic}
+Krawiec, K., Moraglio, A., Hu, T., Etaner-Uyar, A., Hu, B.: Genetic
+  Programming: 16th European Conference, EuroGP 2013, Vienna, Austria, April
+  3-5, 2013, Proceedings. Lecture Notes in Computer Science, Springer Berlin
+  Heidelberg (2013), \url{https://books.google.pt/books?id=6Y-5BQAAQBAJ}
+
+\bibitem{langdon1995genetic}
+Langdon, W.B., Qureshi, A.: Genetic programming-computers using" natural
+  selection" to generate programs. In: WC1E 6BT. Citeseer (1995)
+
+\bibitem{adaptativeCrossOverMutation}
+Lin, W.Y., Lee, W.Y., Hong, T.P.: Adapting crossover and mutation rates in
+  genetic algorithms. J. Inf. Sci. Eng.  \textbf{19},  889--903 (09 2003)
+
+\bibitem{analysisMergeSort}
+Manwade, K.: Analysis of parallel merge sort algorithm. International Journal
+  of Computer Applications  \textbf{1} (02 2010). \doi{10.5120/401-597}
+
+\bibitem{rawlings2001applied}
+Rawlings, J.O., Pantula, S.G., Dickey, D.A.: Applied regression analysis: a
+  research tool. Springer Science \& Business Media (2001)
+
+\bibitem{sivanandam2008genetic}
+Sivanandam, S., Deepa, S.: Genetic algorithm optimization problems. In:
+  Introduction to Genetic Algorithms, pp. 165--209. Springer (2008)
+
 \bibitem{jenetics}
-Wilhelmstötter, F.: Jenetics: Library user's manual 4.3 (2018),
+Wilhelmstötter, F.: Jenetics, Library user's manual 4.3 (2018),
   \url{https://books.google.pt/books?id=6Y-5BQAAQBAJ}
 
 \end{thebibliography}

@@ -11,10 +11,10 @@
 \begin{document}
 
 % \thanks{Supported by organization x.}
-\title{Parallel Genetic Classifier}
+\title{Parallel Genetic Algorithm for Regression}
 
-\author{Paulo Santos\inst{1} \and
-Maria Fidalgo\inst{1}
+\author{Paulo Santos \and
+Maria Fidalgo
 }
 %\authorrunning{F. Author et al.}
 
@@ -26,38 +26,53 @@ Maria Fidalgo\inst{1}
 \begin{abstract}
 The first sentence of an abstract should clearly introduce the topic of the paper so that readers can relate it to other work they are familiar with. However, an analysis of abstracts across a range of fields show that few follow this advice, nor do they take the opportunity to summarize previous work in their second sentence. A central issue is the lack of structure in standard advice on abstract writing, so most authors don’t realize the third sentence should point out the deficiencies of this existing research. To solve this problem, we describe a technique that structures the entire abstract around a set of six sentences, each of which has a specific role, so that by the end of the first four sentences you have introduced the idea fully. This structure then allows you to use the fifth sentence to elaborate a little on the research, explain how it works, and talk about the various ways that you have applied it, for example to teach generations of new graduate students how to write clearly. This technique is helpful because it clarifies your thinking and leads to a final sentence that summarizes why your research matters.
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
+\keywords{Parallel Genetic Programming \and Regression \and Island Model.}
 \end{abstract}
-%
-%
-%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+Genetic Algorithm (GA's) are metaheuristic searching algorithms where the main idea lies in following the same principles as Natural Selection and Evolution in Biology \cite{sivanandam2008genetic}. That is, the algorithms work around a \textit{population} of potential solutions for the problem, the \textit{individuals}. The population changes during the execution of the algorithm, mimicking the evolution of a real population of living beings, from generation to generation, where the fitter individuals are more likely to survive and reproduce.
 
-The introduction should set the context for your project. Why is this topic relevant?
+The algorithm is composed by three main operations: Fitness, Crossover and Mutation. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding two individuals; and Mutation (or asexual reproduction) produces random changes to an individual \cite{langdon1995genetic}.
 
-You should also define the scope of your project. You could design a software artifact that would end poverty and famine, but that is not realistic.
+Due to the characteristics of the GA, applications are often related to optimization \cite{sivanandam2008genetic}, such as the Traveling Salesman Problem \cite{grefenstette1985genetic},, classification \cite{5340522}, decision making \cite{George:2012:GAB:2345396.2345426} and prediction \cite{etemadi2009genetic}.
 
-For example, this document describes the structure your paper should have. Despite using the LNCS LaTeX template \footnote{LNCS is the official template for Europar 2019, in case you are interested.}, the formatting template is not relevant, only the content structure is relevant.
+Prediction can be accomplished through Regression Analysis, which is the task of modeling a random variable $Y$ of interest given the values of other random variables that we believe being independent from $Y$. This may be translated in finding the mathematical expression best suited to translate $Y$. The model also contains unknown constants called parameters, which will be estimated from the data \cite{rawlings2001applied}.
 
-Finally, you should define the goals of your project. For instance,
+However, when using Genetic Algorithms for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the expression that minimizes the error between the value provided by the expression and the actual value.
+
+In this work, we explore different parallelizations of the Genetic Algorithm for regression, using the toxicity dataset \cite{krawiec2013genetic}.
+
+We will start by introducing the algorithm and its operations in further detail.
+
+Next, we will present the several approaches studied:
 
 \begin{itemize}
-	\item To propose a method for the parallelization of Genetic Algorithms
-	\item An implementation of such algorithm
-	\item The experimental evaluation of such method, with comparison with a sequential alternative.
+\item Sequential
+\item Adaptive Sequential
+\item Trivial Parallelization
+\item Island Parallelization
 \end{itemize}
 
+Finally, we will demonstrate the experimental evaluation and compare with each other.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 
 This is an optional section, as it depends on your project. In projects where a given specific knowledge is required to understand the article, you should give a brief introduction of the required concepts. In the case of genetic algorithms, you should present the basic algorithm in this section.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approach}
 
 In this section, you should present your approach. Notice that an approach may be different than an implementation. An approach should be generic and ideally applied for different machines, virtual machines or languages. You should present algorithms or generic diagrams explaining the approach.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Implementation Details}
 
 \subsection{Abstract Syntax Tree}
@@ -114,6 +129,8 @@ Due to parallel mergesort ease of implementation and advantages of execution tim
 
 \subsubsection{Island}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
 
 \subsection{Experimental Setup}
@@ -153,6 +170,8 @@ You should include (ideally vectorial) plots, with a descriptive caption. Make s
 
 Here you should discuss the results on a high level. For instance, based on our results, the parallelization of the merge-sort is relevant as no other parallel work occurs at the same time, and the complexity $O(N log(N))$ can have a large impact when the number of individuals is high.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work}
 
 Several implementations of the genetic algorithm were made throughout the years. We will shortly talk about two implementations and how they fit in the scope of our work.
@@ -161,6 +180,8 @@ Dominic and Willis  \cite{GPTIPS} developed a MATLAB toolbox, GPTIPS, which is a
 
 Jenetics \cite{jenetics} is another genetic programming implementation. It is a Java library designed to abstract different concepts within the genetic programming panorama, such as Gene, Genotype and Chromosome, allowing it to serve a vast spectrum of domains. This library implements the Java Stream Interface and provides ForkJoin Parallelization. This is, therefore, a generic purpose implementation for genetic algorithm. On the other hand, in our work we provided a study of genetic programming specific for regression, where other parallelization techniques were able to achieve better results than ForkJoin, like the Island Models.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 
 Here you should resume the major conclusions taken from discussion. Ideally, these should align with the objectives introduced in the introduction.
@@ -168,6 +189,8 @@ Here you should resume the major conclusions taken from discussion. Ideally, the
 
 You should also list the future work, i. e., tasks and challenges that were outside your scope, but are relevant.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements}
 
 First Author wrote the part of the program implemented the phasers. Second Author implemented the MergeSort in parallel. 
