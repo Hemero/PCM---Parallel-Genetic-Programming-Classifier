@@ -34,21 +34,17 @@ The first sentence of an abstract should clearly introduce the topic of the pape
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Genetic Algorithm (GA's) are metaheuristic searching algorithms where the main idea lies in following the same principles as Natural Selection and Evolution in Biology \cite{sivanandam2008genetic}. That is, the algorithms work around a \textit{population} of potential solutions for the problem, the \textit{individuals}. The population changes during the execution of the algorithm, mimicking the evolution of a real population of living beings, from generation to generation, where the fitter individuals are more likely to survive and reproduce.
+Genetic Algorithms (GAs) are metaheuristic searching algorithms where the main idea lies in following the same principles as Natural Selection and Evolution in Biology \cite{sivanandam2008genetic}. That is, the algorithms work around a \textit{population} of potential solutions for the problem, the \textit{individuals}. The population changes during the execution of the algorithm, mimicking the evolution of a real population of living beings, from generation to generation, where the fitter individuals are more likely to survive and reproduce.
 
-The algorithm is composed by three main operations: Fitness, Crossover and Mutation. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding two individuals; and Mutation (or asexual reproduction) produces random changes to an individual \cite{langdon1995genetic}.
+The algorithm is composed by three main operations: Fitness, Crossover and Mutation. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; and Mutation (or asexual reproduction) produces random changes to an individual \cite{langdon1995genetic}.
 
-Due to the characteristics of the GA, applications are often related to optimization \cite{sivanandam2008genetic}, such as the Traveling Salesman Problem \cite{grefenstette1985genetic},, classification \cite{5340522}, decision making \cite{George:2012:GAB:2345396.2345426} and prediction \cite{etemadi2009genetic}.
+Due to the characteristics of the GAs, applications are often related to optimization \cite{sivanandam2008genetic}, such as the Traveling Salesman Problem \cite{grefenstette1985genetic}, classification \cite{5340522}, decision making \cite{George:2012:GAB:2345396.2345426} and prediction \cite{etemadi2009genetic}.
 
-Prediction can be accomplished through Regression Analysis, which is the task of modeling a random variable $Y$ of interest given the values of other random variables that we believe being independent from $Y$. This may be translated in finding the mathematical expression best suited to translate $Y$. The model also contains unknown constants called parameters, which will be estimated from the data \cite{rawlings2001applied}.
+Prediction can be accomplished through Regression Analysis, which is the task of modeling a random variable $Y$ as a function of a vector of random variables $X$. This may be translated as the task of finding the mathematical expression best suited to explain $Y$. Regression models presuppose the existence of constants, called \textit{parameters}, that are to be estimated from the data \cite{rawlings2001applied}.
 
-However, when using Genetic Algorithms for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the expression that minimizes the error between the value provided by the expression and the actual value.
+However, when using Genetic Algorithms for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
 
-In this work, we explore different parallelizations of the Genetic Algorithm for regression, using the toxicity dataset \cite{krawiec2013genetic}.
-
-We will start by introducing the algorithm and its operations in further detail.
-
-Next, we will present the several approaches studied:
+In this work, we explore different parallelizations of the Genetic Algorithm for regression, using the toxicity dataset \cite{krawiec2013genetic}. We will start by introducing the algorithm and its operations in further detail. Next, we will present the several approaches studied:
 
 \begin{itemize}
 \item Sequential
