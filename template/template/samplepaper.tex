@@ -36,13 +36,13 @@ The first sentence of an abstract should clearly introduce the topic of the pape
 
 Genetic Algorithms (GAs) are metaheuristic searching algorithms where the main idea lies in following the same principles as Natural Selection and Evolution in Biology \cite{sivanandam2008genetic}. That is, the algorithms work around a \textit{population} of potential solutions for the problem, the \textit{individuals}. The population changes during the execution of the algorithm, mimicking the evolution of a real population of living beings, from generation to generation, where the fitter individuals are more likely to survive and reproduce.
 
-The algorithm is composed by three main operations: Fitness, Crossover and Mutation. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; and Mutation (or asexual reproduction) produces random changes to an individual \cite{langdon1995genetic}.
+The algorithm is composed by three main operations: Fitness, Crossover, Mutation and Selection. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; and Mutation (or asexual reproduction) produces random changes to an individual; Selection determines how the individuals are chosen for the Crossover and Mutation \cite{langdon1995genetic}.
 
 Due to the characteristics of the GAs, applications are often related to optimization \cite{sivanandam2008genetic}, such as the Traveling Salesman Problem \cite{grefenstette1985genetic}, classification \cite{5340522}, decision making \cite{George:2012:GAB:2345396.2345426} and prediction \cite{etemadi2009genetic}.
 
 Prediction can be accomplished through Regression Analysis, which is the task of modeling a random variable $Y$ as a function of a vector of random variables $X$. This may be translated as the task of finding the mathematical expression best suited to explain $Y$. Regression models presuppose the existence of constants, called \textit{parameters}, that are to be estimated from the data \cite{rawlings2001applied}.
 
-However, when using Genetic Algorithms for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
+However, when using a GA for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
 
 In this work, we explore different parallelizations of the Genetic Algorithm for regression, using the toxicity dataset \cite{krawiec2013genetic}. We will start by introducing the algorithm and its operations in further detail. Next, we will present the several approaches studied:
 
@@ -59,18 +59,20 @@ Finally, we will demonstrate the experimental evaluation and compare with each o
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Genetic Algorithm}
 
+The implementation of a GA typically starts with a population of random individuals. Then, the population is evaluated, and reproduction operations take place \cite{whitley1994genetic}. Bellow, we present the pseudo-code for the genetic algorithm. The $AddElitesToNewPopulation$ is an optional but often used step, where a designated percentage of the best individuals are directly transfered to the new population (without any modification). This helps the algorithm to converge faster and prevents it from losing the best solutions \cite{martins2016gacuda}.
+
 \begin{algorithmic}
    \State \textbf{Input}:$Max_{gen},Pop_{size},P_{cross},P_{mut},P_{reproduction}$
    \State \textbf{Output}:$S_{best}$
    \State $Population\gets InitializePopulation(Pop_{size},nodes_{func},nodes_{term})$
-   \State $MeasureFitness(Population)$
+   \State $MeasureFitness(Population)$ \Comment{Evaluation of the population}
    \State $S_{best} \gets GetBestSolution(Population)$
    \State $Generation_{i} \gets 0$
    
    \While{$Generation_{i} \not= Max_{gen}$}
       \State $Generation_{i} \gets Generation_{i} + 1$
       \State $NewPopulation \gets \emptyset$
-      \State $AddElitesToNewPopulation(Population,NewPopulation)$
+      \State $AddElitesToNewPopulation(Population,NewPopulation)$ \Comment{Optional step}
    
       \While{$Size(NewPopulation) < Pop_{size}$}
          \State $Ind_{1}, Ind_{2} \gets SelectForCrossover(Population, P_{reproduction})$
@@ -84,17 +86,21 @@ Finally, we will demonstrate the experimental evaluation and compare with each o
    \State \textbf{return} $S_{best}$
 \end{algorithmic}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Approach}
+
+\subsection{Encoding}
+
 \subsection{Fitness}
+
+\subsection{Selection}
 
 \subsection{Crossover}
 
 \subsection{Mutation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Approach}
-
-
+\subsection{Parallelization}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
