@@ -4,7 +4,10 @@
 \usepackage{indentfirst}
 \usepackage{hyperref}
 \usepackage{algorithm}
+\usepackage[export]{adjustbox}
 \usepackage[noend]{algpseudocode}
+
+\usepackage{epstopdf} %converting to PDF
 
 \setcounter{secnumdepth}{3}
 
@@ -179,7 +182,7 @@ Every island runs the Regular Genetic Algorithm approach to compute each individ
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=.92\textwidth]{IslandModel.png}
-\caption{Example of thread redistribution, with 8 processors and 5 islands, after island 1 has terminated.} \label{islandDiagram}
+\caption{Example of thread redistribution after island 1 has terminated and island 4 and island 5 create one new thread each. Settings: 8 processors, 5 islands.} \label{islandDiagram}
 \end{figure}
 
 
@@ -196,23 +199,29 @@ The results have been gathered by running each approach previously presented 30 
 
 + Comparacao dos resultados da regular linear com a adaptative linear
 
+\begin{figure}[htbp]
+\centering
+\adjincludegraphics[width=\textwidth, trim={100 110 25 20}, clip]{ComparacaoIlhas}
+\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\end{figure}
 + Comparacao dos resultados da de ilhas com 6 ilhas, 12 ilhas, 18 ilhas e 24 ilhas
 
+\begin{figure}[htbp]
+\centering
+\adjincludegraphics[width=\textwidth, trim={90 110 15 20}, clip]{ComparisonWithLinear}
+\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\end{figure}
 + Comparacao de todas as implementacoes em termos finais de execucao com boxplot
 
-+ Apresentacao em linha de tempo da linear, forkjoin e phaser
-
-+ Comparacao em linha de tempo da linear, forkjoin, phaser, ilhas com 6
+\begin{figure}[htbp]
+\centering
+\adjincludegraphics[width=\textwidth, trim={90 110 25 20}, clip]{ComparisonNoLinear}
+\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\end{figure}
 
 In this section you should present the results. Do not forget to explain where the data came from. 
 
 You should include (ideally vectorial) plots, with a descriptive caption. Make sure all the plots (Like Figure~\ref{fig1} are well identified and axis and metrics are defined.
-
-%\begin{figure}[htbp]
-%\includegraphics[width=\textwidth]{code/performance.eps}
-%\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
-%\end{figure}
-
 
 \subsection{Discussion}
 
