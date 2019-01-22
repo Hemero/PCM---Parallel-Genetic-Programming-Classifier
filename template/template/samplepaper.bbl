@@ -51,6 +51,9 @@ Lin, W.Y., Lee, W.Y., Hong, T.P.: Adapting crossover and mutation rates in
 Manwade, K.: Analysis of parallel merge sort algorithm. International Journal
   of Computer Applications  \textbf{1} (02 2010). \doi{10.5120/401-597}
 
+\bibitem{martins2016gacuda}
+Martins, B.M.M.: Gacuda-a genetic algorithm framework over gpus  (2016)
+
 \bibitem{rawlings2001applied}
 Rawlings, J.O., Pantula, S.G., Dickey, D.A.: Applied regression analysis: a
   research tool. Springer Science \& Business Media (2001)
@@ -58,6 +61,15 @@ Rawlings, J.O., Pantula, S.G., Dickey, D.A.: Applied regression analysis: a
 \bibitem{sivanandam2008genetic}
 Sivanandam, S., Deepa, S.: Genetic algorithm optimization problems. In:
   Introduction to Genetic Algorithms, pp. 165--209. Springer (2008)
+
+\bibitem{whitley1994genetic}
+Whitley, D.: A genetic algorithm tutorial. Statistics and computing
+  \textbf{4}(2),  65--85 (1994)
+
+\bibitem{islandModelGA}
+Whitley, D., Rana, S., Heckendorn, R.: The island model genetic algorithm: On
+  separability, population size and convergence. Journal of Computing and
+  Information Technology  \textbf{7} (12 1998)
 
 \bibitem{jenetics}
 Wilhelmstötter, F.: Jenetics, Library user's manual 4.3 (2018),

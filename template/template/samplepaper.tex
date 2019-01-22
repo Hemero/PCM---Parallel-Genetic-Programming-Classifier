@@ -39,13 +39,13 @@ The first sentence of an abstract should clearly introduce the topic of the pape
 
 Genetic Algorithms (GAs) are metaheuristic searching algorithms where the main idea lies in following the same principles as Natural Selection and Evolution in Biology \cite{sivanandam2008genetic}. That is, the algorithms work around a \textit{population} of potential solutions for the problem, the \textit{individuals}. The population changes during the execution of the algorithm, mimicking the evolution of a real population of living beings, from generation to generation, where the fitter individuals are more likely to survive and reproduce.
 
-The algorithm is composed by three main operations: Fitness, Crossover and Mutation. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; and Mutation (or asexual reproduction) produces random changes to an individual \cite{langdon1995genetic}.
+The algorithm is composed by three main operations: Fitness, Crossover, Mutation and Selection. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; and Mutation (or asexual reproduction) produces random changes to an individual; Selection determines how the individuals are chosen for the Crossover and Mutation \cite{langdon1995genetic}.
 
 Due to the characteristics of the GAs, applications are often related to optimization \cite{sivanandam2008genetic}, such as the Traveling Salesman Problem \cite{grefenstette1985genetic}, classification \cite{5340522}, decision making \cite{George:2012:GAB:2345396.2345426} and prediction \cite{etemadi2009genetic}.
 
 Prediction can be accomplished through Regression Analysis, which is the task of modeling a random variable $Y$ as a function of a vector of random variables $X$. This may be translated as the task of finding the mathematical expression best suited to explain $Y$. Regression models presuppose the existence of constants, called \textit{parameters}, that are to be estimated from the data \cite{rawlings2001applied}.
 
-However, when using Genetic Algorithms for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
+However, when using a GA for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
 
 In this work, we explore different parallelizations of the Genetic Algorithm for regression, using the toxicity dataset \cite{krawiec2013genetic}. We will start by introducing the algorithm and its operations in further detail. Next, we will present the several approaches studied:
 
@@ -62,18 +62,20 @@ Finally, we will demonstrate the experimental evaluation and compare with each o
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Genetic Algorithm}
 
+The implementation of a GA typically starts with a population of random individuals. Then, the population is evaluated, and reproduction operations take place \cite{whitley1994genetic}. Bellow, we present the pseudo-code for the genetic algorithm. The $AddElitesToNewPopulation$ is an optional but often used step, where a designated percentage of the best individuals are directly transfered to the new population (without any modification). This helps the algorithm to converge faster and prevents it from losing the best solutions \cite{martins2016gacuda}.
+
 \begin{algorithmic}
    \State \textbf{Input}:$Max_{gen},Pop_{size},P_{cross},P_{mut},P_{reproduction}$
    \State \textbf{Output}:$S_{best}$
    \State $Population\gets InitializePopulation(Pop_{size},nodes_{func},nodes_{term})$
-   \State $MeasureFitness(Population)$
+   \State $MeasureFitness(Population)$ \Comment{Evaluation of the population}
    \State $S_{best} \gets GetBestSolution(Population)$
    \State $Generation_{i} \gets 0$
    
    \While{$Generation_{i} \not= Max_{gen}$}
       \State $Generation_{i} \gets Generation_{i} + 1$
       \State $NewPopulation \gets \emptyset$
-      \State $AddElitesToNewPopulation(Population,NewPopulation)$
+      \State $AddElitesToNewPopulation(Population,NewPopulation)$ \Comment{Optional step}
    
       \While{$Size(NewPopulation) < Pop_{size}$}
          \State $Ind_{1}, Ind_{2} \gets SelectForCrossover(Population, P_{reproduction})$
@@ -87,52 +89,61 @@ Finally, we will demonstrate the experimental evaluation and compare with each o
    \State \textbf{return} $S_{best}$
 \end{algorithmic}
 
-\subsection{Fitness}
-
-\subsection{Crossover}
-
-\subsection{Mutation}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approach}
 
+\subsection{Encoding}
 
+%% types of encoding
+
+Originally, binary encoding was used to encode the solution \cite{whitley1994genetic}. That is, an individual was represented by a vector where each entrance corresponded to some feature being true for that particular individual. Later, other types of encoding were propposed in order to represent more sophisticated types of individuals, like the value encoding, permutation encoding, and trees \cite{martins2016gacuda}. We chose the last one for our work, since our goal is to encode expressions, that can be directly mapped to Abstract Syntax Trees.
+
+Choosing an Abstract Syntax Tree for the encoding allows us to easily generate random mathematical expressions with an immutable tree. Each node of the tree either represents a binary operator ($+,-,*,whole division$) node or a constant node, which can be a variable or value (any integer from -1000 to 1000).
+
+The variable names were generated according to the dataset: from $x_{1}$ to $x_{n}$, where $n$ is the number of features from the dataset.
+
+\subsection{Fitness}
+
+\subsection{Selection}
+
+\subsection{Crossover}
+
+Since each tree represents an individual, it has a crossover operation which allows it to generate offspring by crossing itself with another tree in a single-point of crossing. This has been accomplished by randomly choosing and swapping two nodes from each tree.
+
+\subsection{Mutation}
+
+Every tree may also mutate itself by randomly choosing one node and changing its inner value. A constant binary node could have its inner content changed with a new value or variable, while binary operator nodes would have their operation changed.
+
+\subsection{Parallelization}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Implementation Details}
 
 \subsection{Abstract Syntax Tree}
-The implementation of an Abstract Syntax Tree allows us to easily generate random mathematical expressions with an immutable tree where each node either represents a binary operator node or a constant node, which can be a variable or value.
 
-Each tree contains a crossover operation which allows it to generate offspring by crossing itself with another tree in a single-point of crossing. This has been accomplished by randomly choosing and swapping two nodes from each tree.
+As mentioned above, Abstract Syntax Trees allow us to generate random mathematical expressions. Moreover, by using a Java expression builder\footnote{\href{https://www.objecthunter.net/exp4j/index.htm}{exp4j - Expression Builder from String for Java}}, it was possible to easily map values to variables of a given expression and obtain the result from it, which is useful when calculating the fitness of the tree.
+%
+%\subsection{Sequential Genetic Algorithm}
+%The sequential implementation of a regular genetic algorithm where each genetic algorithm operation has fixed ratios. 
+%
+%The fitness is measured using linear regression \textbf{TODO:} %%%%%%%%%%%%%%%%% MARIA !!! Eu nao sei esta parte do measure fitness com regressao linear
+%
+%The population is sorted from best fitness to worst fitness using a default arrays sorting algorithm from Java in order to obtain the best individual at a certain generation. This individual remains unchanged to the next generation, and the rest of the population is replaced with generated offspring by crossing parents using a Fitness Proportionate Selection, where the best individuals have a higher chance of being chosen for crossover.
+%
+%Each offspring contains 10\% chance of being selected to suffer a mutation.
 
-Every tree may also mutate itself by randomly choosing one node and changing its inner value. A constant binary node could have its inner content changed with a new value or variable, while binary operator nodes would have their operation changed.
+\subsection{Adaptive Genetic Algorithm}
+The Adaptive implementation of a GA diverges from the regular implementation by not having the mutation and crossover rates fixed. Instead, the mutation and crossover rates are dynamic, and adapt depending on the progression made by each operation in the last generation \cite{adaptativeCrossOverMutation}.
 
-As aboved-mentioned, Abstract Syntax Tree allows us to generate random mathematical expressions. By using an expression builder\footnote{\href{https://www.objecthunter.net/exp4j/index.htm}{exp4j - Expression Builder from String for Java}} was possible to set values to variables of a given expression and obtain a result useful to calculate the fitness of the tree.
-
-\subsection{Regular Genetic Algorithm}
-The linear implementation of a regular genetic algorithm where each genetic algorithm operation has fixed ratios. 
-
-The fitness is measured using a linear regression \textbf{TODO:} %%%%%%%%%%%%%%%%% MARIA !!! Eu nao sei esta parte do measure fitness com regressao linear
-
-The population is sorted from best fitness to worst fitness using a default arrays sorting algorithm from Java.
-
-The best individual from each generation is remains unchanged to the next generation. The rest of the population is replaced with generated offsprings by crossing parents using a Fitness Proportionate Selection, where the best individuals have a higher chance of being chosen for crossover.
-
-Each offspring contains 10\% chance of being selected to suffer a mutation.
-
-\subsection{Adaptative Genetic Algorithm}
-The linear implementation of a genetic algorithm where the mutation crossover rates are adaptative  depending on the progression made by each operation in the last generation \cite{adaptativeCrossOverMutation}. The measure fitness and sorting is implemented the same way has in the Regular Genetic Algorithm.
-
-The best individual still remains from each generation unchanged to the following one. The new offsprings are generated by crossing parents using an Adapted Fitness Proportionate Selection. Since new offsprings are always generated by crossing two individuals, the crossover rate will influence the probability each individual has to be chosen. This has been attained by using the absolute value of  normal probability density function and multiplying it by the sum of a third of the amount of population with the crossover rate. The crossover rate is an integer value between \(-populationSize\) and \(populationSize\).
+The new offsprings are generated by crossing parents using an Adapted Fitness Proportionate Selection. Since new offsprings are always generated by crossing two individuals, the crossover rate will influence the probability each individual has of being chosen. This has been attained by using the absolute value of the normal probability density function, and multiplying it by the sum of a third of the amount of population with the crossover rate. The crossover rate is an integer value between \(-populationSize\) and \(populationSize\).
 
 \[ \left |\left | \frac{1}{\sigma \sqrt{2\pi}}*e^{-\frac{(-\mu)^2}{2\sigma^2}} \right | * (popSize\,/\,3) + crossoverRate)  \right | \%  \, popSize \]	
 
 The mutation rate controls the probability of an individual to suffer a mutation. This value is a value between 0.05 and 1.0.
 
-Both of these rates are updated according to the progressions they obtained for each individual. The chosen mutation rate offset is 0.05 and the crossover rate offset is \(populationSize * 0.025\).
+Both rates are updated according to the progressions they obtained for each individual. The chosen mutation rate offset is 0.05 and the crossover rate offset is \(populationSize * 0.025\).
 
 \begin{algorithmic}
 \If {$mutationProgress < crossOverProgress$}
@@ -154,30 +165,30 @@ Due to parallel mergesort ease of implementation and advantages of execution tim
 \textbf{TODO:}
 
 \subsubsection{Phaser} \hfill \par
-The Phaser Approach makes use of Phasers in order to introduce a synchronization point between all the Threads running. 
+The Phaser approach uses phasers in order to introduce a synchronization point between all the threads running.
 
-First of, there has been made the decision of creating \(N\) threads proportional to the amount of available processors of the machine. A smaller value would not take advantage of all the processing power available, whereas a higher value would have an impact on the performance since the CPU scheduler would give each one of those \(N > availableProcessors\) some share of CPU time.
+First of, there has been made the decision of creating \(N\) threads proportional to the amount of available processors of the machine. A smaller value would not take advantage of all the processing power available, whereas a higher value would have a negative impact on the performance, since the CPU scheduler would give each one of those \(N > availableProcessors\) some share of CPU time.
 
-Every Thread is responsible for a partial amount of the population. In order to maintain consistency in the population over the several generations and between different Threads it is required a synchronization point, the phaser. 
+Every thread is responsible for a portion of the population. In order to maintain consistency in the population over the several generations, and between different threads, it is required a synchronization point, the phaser. 
 
-The synchronization point has been introduced before and after the transition from the old population to the new one. This is a requirement since the following operations cannot happen until  every single expression from the new population has been introduced in the current population.
+The synchronization point has been introduced before and after the transition from the old population to the new one. This is a requirement since the GA operations cannot happen until every single expression from the new population has been introduced in the current population.
 
-It is also a requirement a synchronization point ahead and prior to the sorting  of the population. Once every single individual has transitioned from the old to the new population, the Thread with \(threadId := 0\) launches the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm. Once the algorithm finishes, every Thread gets through the synchronization point and a new generation starts.
+Additionally, it was also introduced synchronization points before and after sorting the population. After every single individual has transitioned from the old to the new population, the thread with \(threadId := 0\) launches the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm. Once the algorithm finishes, every thread gets through the synchronization point and a new generation starts.
 
-The phaser runs the Regular Genetic Algorithm approach in the computation of each individual.
+The phaser runs the regular GA approach to compute each individual.
 
 \subsubsection{Island} \hfill \par
-In order to take advantage of the amount of available processors we've also introduced an implementation of an Island Model Genetic Algorithm \cite{islandModelGA}.
+In order to take advantage of the amount of available processors we have also implemented an Island Model for the GA\cite{islandModelGA}.
 
-Our approach takes advantage of the multiple available processors to create and hold the computation of the islands. Each island has its own population, with size  \(populationSize / amountIslands \), and is independent of other islands, doesn't require synchronization points. Occasionally, every 20 generations, the best individual of an island is sent to a random island using a \emph{ConcurrentLinkedQueue}. Upon receiving a new individual, right before sorting the population, the last individual is replaced with the new one received.
+In our approach we took into account the quantity of available processors to create and hold the computation of the islands. Each island has its own portion of the population, with size  \(populationSize / amountIslands \), and is independent of the other islands. Consequently, synchronization points are not required. Occasionally - every 20 generations - the best individual of an island is sent to a random island and waits in a \emph{ConcurrentLinkedQueue} until the sort starts, when the last (worst) individual is replaced with the new one.
 
-A naive approach would be to create one island per available processor. Our implementation allows us to create a variable amount of islands between 1 and the amount of available processors.
+A naive approach would be to create one island per available processor. Our implementation allows us to create a variable amount of islands between $1$ and the amount of available processors.
 
- If the specified amount of islands is smaller than the amount of processors then the remaining available processors will be evenly distributed through the islands, allowing these to contain inner parallelization. The inner parallelization allows the island to split the population with the amount of threads it has been assigned and compute each generation quickier. As in the Phaser approach, it has been used a phaser to create synchronization points in essencial operations, such as transitioning from the old population to the new one and sorting it, between the threads of an island. In this case the island is responsible for calling the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm.
+ If the specified amount of islands is smaller than the amount of processors then the remaining available processors will be evenly distributed through the islands, allowing these to contain inner parallelization. The inner parallelization allows the island to split the population with the amount of threads it has been assigned and compute each generation quicker. As in the Phaser approach, phasers were also used here to create synchronization in the points mentioned earlier. In this case the island is responsible for calling the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm.
 
-When an island completes its computation, it redistributes the upcoming available threads with the rest of the islands starting by the end. This way we're able to take advantage of the processors once they're free. The re-destribution is implemented using a \(ConcurrentLinkedQueue<Pair<Integer, Integer>>\) where the island sends a message to create a new thread to another active island containing \(<islandId, \,newAmountThreads>\).
+When an island completes its computation, it redistributes the upcoming available threads with the rest of the islands starting by the end. This way we are able to reuse the processors once they're free. The redistribution is implemented using a \(ConcurrentLinkedQueue<Pair<Integer, Integer>>\), where the island sends a message to create a new thread to another active island containing \(<islandId, \,newAmountThreads>\).
 
-Every island runs the Regular Genetic Algorithm approach to compute each individual.
+Every island runs the regular GA approach to compute each individual.
 
 \begin{figure}[htbp]
 \centering
