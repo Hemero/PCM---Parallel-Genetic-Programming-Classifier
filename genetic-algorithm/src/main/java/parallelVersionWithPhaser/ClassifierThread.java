@@ -4,6 +4,7 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadLocalRandom;
 
 import abstractsyntaxtree.ExpressionTree;
+import main.Main;
 import net.objecthunter.exp4j.Expression;
 import utils.ParallelMergeSort;
 
@@ -64,11 +65,15 @@ public class ClassifierThread extends Thread {
 		// 1. Calcular o fitness
 		for (int i = this.lowLimit; i < this.highLimit; i++)
 			this.measureExpression(this.population[i], 0);
+
+		// Wait for everyone to generate their population
+		this.phaser.arriveAndAwaitAdvance();
 		
 		// 2. Ordenar a populacao
-		this.sortPopulation();
-		
-		// Wait for everyone to generate their population
+		if (this.threadId == 0)
+			this.sortPopulation();
+
+		// Wait for population to be sorted
 		this.phaser.arriveAndAwaitAdvance();
 
 		// Create the new population
@@ -98,8 +103,9 @@ public class ClassifierThread extends Thread {
 			
 			// Sort the current population
 			if (this.threadId == 0) {
-				sortPopulation();
-				System.out.println(geracao + ";" + this.population[0].getFitness());
+				sortPopulation();			
+				Main.contador.stop();
+				System.out.println(geracao + ";" + this.population[0].getFitness() + ";" + Main.contador.getDuration());
 			}
 			
 			// Wait for population to be sorted

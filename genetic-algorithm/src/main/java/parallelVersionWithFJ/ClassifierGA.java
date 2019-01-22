@@ -1,6 +1,7 @@
 package parallelVersionWithFJ;
 
 import abstractsyntaxtree.ExpressionTree;
+import main.Main;
 import utils.ParallelMergeSort;
 
 public class ClassifierGA {
@@ -71,7 +72,9 @@ public class ClassifierGA {
 			// Set the new population
 			this.population = newPopulation;
 			
-			System.out.println(geracao + ";" + this.population[0].getFitness());
+			Main.contador.stop();
+			
+			System.out.println(geracao + ";" + this.population[0].getFitness() + ";" + Main.contador.getDuration());
 
 			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}

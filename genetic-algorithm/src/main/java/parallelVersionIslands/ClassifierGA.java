@@ -35,7 +35,7 @@ public class ClassifierGA {
 		
 		do {
 			// System.out.println("Introduza uma quantidade de ilhas inferior a " + AMOUNT_THREADS + ": ");
-			qtdIlhas = 24;
+			qtdIlhas = 6;
 			
 			if (qtdIlhas <= 0 || qtdIlhas > AMOUNT_THREADS)
 				System.out.println(String.format(ERROR_QTD_ILHAS, qtdIlhas));
