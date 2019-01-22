@@ -131,6 +131,8 @@ Normally, the fitness function is the objective function to be maximized through
 
 There are many different strategies to choose the individuals for crossover and mutation, like tournament selection or rank selection.Nevertheless, we chose the most popular one, known as proportionate selection (or roulette-wheel selection). In this strategy, the probability of an individual being chosen is directly proportionate to its fitness \cite{martins2016gacuda}.
 
+In addition, the sorting of the population is also performed, so that the first individual is the best and last the worst.
+
 \subsection{Crossover and Mutation}
 
 For crossover and mutation there also are multiple strategies that can be chosen. For the sake of simplicity, we opted by following the simpler approaches: one-point crossover and the uniform mutation \cite{martins2016gacuda}.
@@ -141,25 +143,6 @@ The uniform mutation consists of randomly choosing one node and changing its inn
 
 Note that, in the context of our work, the point is one of the nodes of the tree. So, to choose the node randomly, we developed the algorithm that follows:
 %%%% poe aqui o algoritmo PAULO
-
-\subsection{Parallelization}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Implementation Details}
-
-\subsection{Abstract Syntax Tree}
-
-As mentioned above, Abstract Syntax Trees allow us to generate random mathematical expressions. Moreover, by using a Java expression builder\footnote{\href{https://www.objecthunter.net/exp4j/index.htm}{exp4j - Expression Builder from String for Java}}, it was possible to easily map values to variables of a given expression and obtain the result from it, which is useful when calculating the fitness of the tree.
-%
-%\subsection{Sequential Genetic Algorithm}
-%The sequential implementation of a regular genetic algorithm where each genetic algorithm operation has fixed ratios. 
-%
-%The fitness is measured using linear regression \textbf{TODO:} %%%%%%%%%%%%%%%%% MARIA !!! Eu nao sei esta parte do measure fitness com regressao linear
-%
-%The population is sorted from best fitness to worst fitness using a default arrays sorting algorithm from Java in order to obtain the best individual at a certain generation. This individual remains unchanged to the next generation, and the rest of the population is replaced with generated offspring by crossing parents using a Fitness Proportionate Selection, where the best individuals have a higher chance of being chosen for crossover.
-%
-%Each offspring contains 10\% chance of being selected to suffer a mutation.
 
 \subsection{Adaptive Genetic Algorithm}
 The Adaptive implementation of a GA diverges from the regular implementation by not having the mutation and crossover rates fixed. Instead, the mutation and crossover rates are dynamic, and adapt depending on the progression made by each operation in the last generation \cite{adaptativeCrossOverMutation}.
@@ -183,18 +166,11 @@ Both rates are updated according to the progressions they obtained for each indi
 \EndIf
 \end{algorithmic}
 
-\subsection{Parallel Versions Implementation}
-\subsubsection{Parallel Population Sorting} \label{subsubsec:parallelSort} \hfill \par
-Due to parallel mergesort ease of implementation and advantages of execution time \cite{analysisMergeSort}, the sorting of the population by fitness has been implemented with a parallel mergesort with linear insertion sort when the amount of population to compute is smaller than an offset of 7. The population is splitten by half until the offset is reached and the insertion sort and merge algorithms' are computed.
+\subsubsection{Phaser GA} \hfill \par
 
-
-\subsubsection{ForkJoin} \hfill \par
-\textbf{TODO:}
-
-\subsubsection{Phaser} \hfill \par
 The Phaser approach uses phasers in order to introduce a synchronization point between all the threads running.
 
-First of, there has been made the decision of creating \(N\) threads proportional to the amount of available processors of the machine. A smaller value would not take advantage of all the processing power available, whereas a higher value would have a negative impact on the performance, since the CPU scheduler would give each one of those \(N > availableProcessors\) some share of CPU time.
+First of, it was decided that the \(N\) threads created should be proportional to the amount of available processors of the machine. A smaller value would not take advantage of all the processing power available, whereas a higher value would have a negative impact on the performance, since the CPU scheduler would give each one of those \(N > availableProcessors\) some share of CPU time.
 
 Every thread is responsible for a portion of the population. In order to maintain consistency in the population over the several generations, and between different threads, it is required a synchronization point, the phaser. 
 
@@ -204,16 +180,14 @@ Additionally, it was also introduced synchronization points before and after sor
 
 The phaser runs the regular GA approach to compute each individual.
 
-\subsubsection{Island} \hfill \par
-In order to take advantage of the amount of available processors we have also implemented an Island Model for the GA\cite{islandModelGA}.
+\subsubsection{Island GA} \hfill \par
+To improve the efficiency of the algorithm, we have also implemented an Island Model for the GA. In this model, there are several independent computations of the algorithm running on different parts of the population \cite{islandModelGA}. Consequently, synchronization points are not required.
 
-In our approach we took into account the quantity of available processors to create and hold the computation of the islands. Each island has its own portion of the population, with size  \(populationSize / amountIslands \), and is independent of the other islands. Consequently, synchronization points are not required. Occasionally - every 20 generations - the best individual of an island is sent to a random island and waits in a \emph{ConcurrentLinkedQueue} until the sort starts, when the last (worst) individual is replaced with the new one.
+Each island has its own portion of the population, with size  $\frac{populationSize}{amountIslands}$. Occasionally - every 20 generations - the best individual of an island is sent to a random island and waits until is picked up before the sort starts, when replaces the last (worst) individual of the population of that island.
 
-A naive approach would be to create one island per available processor. Our implementation allows us to create a variable amount of islands between $1$ and the amount of available processors.
+A naive approach would be to create one island per available processor. In our approach we took into account the quantity of available processors to create and hold the computation of the islands.Therefore, it is possible to create a variable amount of islands between $1$ and the amount of available processors. If the specified amount of islands is smaller than the amount of processors then the remaining available processors will be evenly distributed through the islands - starting by the first island, allowing them to contain inner parallelization. This allows the island to split the population with the amount of threads assigned to it and compute each generation quicker.
 
- If the specified amount of islands is smaller than the amount of processors then the remaining available processors will be evenly distributed through the islands, allowing these to contain inner parallelization. The inner parallelization allows the island to split the population with the amount of threads it has been assigned and compute each generation quicker. As in the Phaser approach, phasers were also used here to create synchronization in the points mentioned earlier. In this case the island is responsible for calling the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm.
-
-When an island completes its computation, it redistributes the upcoming available threads with the rest of the islands starting by the end. This way we are able to reuse the processors once they're free. The redistribution is implemented using a \(ConcurrentLinkedQueue<Pair<Integer, Integer>>\), where the island sends a message to create a new thread to another active island containing \(<islandId, \,newAmountThreads>\).
+When an island completes its computation, it redistributes the upcoming available threads with the rest of the islands, starting with the last island. This way we are able to reuse the processors once they're free.
 
 Every island runs the regular GA approach to compute each individual.
 
@@ -223,6 +197,34 @@ Every island runs the regular GA approach to compute each individual.
 \caption{Example of thread redistribution after island 1 has terminated and island 4 and island 5 create one new thread each. Settings: 8 processors, 5 islands.} \label{islandDiagram}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Implementation Details}
+
+\subsection{Abstract Syntax Tree}
+
+As mentioned above, Abstract Syntax Trees allow us to generate random mathematical expressions. Moreover, by using a Java expression builder\footnote{\href{https://www.objecthunter.net/exp4j/index.htm}{exp4j - Expression Builder from String for Java}}, it was possible to easily map values to variables of a given expression and obtain the result from it, which is useful when calculating the fitness of the tree.
+
+\subsubsection{Parallel Population Sorting} \label{subsubsec:parallelSort} \hfill \par
+Due to parallel mergesort ease of implementation and advantages of execution time \cite{analysisMergeSort}, the sorting of the population by fitness has been implemented with a parallel mergesort with linear insertion sort when the amount of population to compute is smaller than an offset of 7 .%% cita o porquê do 7
+The population is split in half until the offset is reached and the insertion sort and merge algorithms' are computed.
+
+\subsubsection{ForkJoin} \hfill \par
+ForkJoin was implemented through two extensions of the Java \(RecursiveAction\) class:
+
+\begin{itemize}
+\item $GeneratePopulation$ - to generate the AST population
+\item $Operations$ - to compute the GA operations (selection, crossover, mutation and fitness)
+\end{itemize}
+
+The limit from which the computation would start to be sequential was set to $2$. This allows the algorithm to divide until the end, to take advantage of the quantity of processors, and promote \textit{work stealing}.
+\subsubsection{Island} \hfill \par
+
+When an individual is sent to another island, it waits in a queue until it's turn arrives. Since this queue is accessed by all islands, it might lead to concurrency issues. To avoid that, we chose the \emph{ConcurrentLinkedQueue} to implement it.
+
+Similarly, the redistribution of threads per islands uses a \(ConcurrentLinkedQueue<Pair<Integer, Integer>>\). When an island finishes its computation, it sends a message to another active island containing \(<islandId, \,newAmountThreads>\) so that it knows it can create new threads according to $newAmountThreads$.
+
+Each island is implemented using the phaser approach for its inner parallelization.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
