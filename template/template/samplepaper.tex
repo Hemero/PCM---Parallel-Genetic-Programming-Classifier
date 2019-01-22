@@ -11,6 +11,7 @@
 \usepackage{epstopdf} %converting to PDF
 
 \setcounter{secnumdepth}{3}
+\raggedbottom
 
 \begin{document}
 
@@ -234,7 +235,7 @@ The results have been gathered by running each approach previously presented 30 
 
 \subsection{Results}
 
-FALTA COMPARACAO LINEAR COM ADAPTATIVA !!!!
+The Figure allows us to consider if it is worth using an Adaptative Genetic Algorithm Approach over a regular one, despite the performance issues.
 
 \begin{figure}[H]
 \centering
@@ -250,7 +251,7 @@ Since the islands 6 and 12 are multiple of 24, they can respectively have 4 and 
 
 On the other hand the island 18, as it is not a multiple of 24, there are going to be islands with 2 threads, and islands with only 1 thread. The execution time will significantly be slower since the islands with only 1 thread represent a bottleneck in our system. However, because of the thread redistribution we are able to amortise the execution time allowing it to achieve a performance similar to the island 24 approach.
 
-\textbf{TODO: NAO SEI EXPLICAR A ilha 24}
+The island 24 features has an unexpected performance. Has the population is splitten evenly between the 24 islands it was expected to behave similarly to other island approaches with multiples of 24, however this is not the case. Our assumption relies on the Parallel MergeSort implemented. Each island is going to create and execute tasks to perform the sorting operation. The thread pool executor, when executed, creates N amount of threads corresponding to the amount of available proccesses. By having N amount of islands running, and each one of them creates a pool of 24 threads to compute the sorting algorithm, by the end we'll have $N*N$ threads. The CPU will have to schedule all of these threads, which implies an issue in terms of performance.
 
 \begin{figure}[H]
 \centering
@@ -262,26 +263,49 @@ On the other hand the island 18, as it is not a multiple of 24, there are going 
 \label{comparacaoImpl}%
 \end{figure}
 
-The Figure \ref{comparacaoImpl} (a)
+The Figure \ref{comparacaoImpl} (a) represents the difference between the linear approach and the speedup obtained from the parallel aproaches. The linear approach required up to 50x the time from the best parallel approach implemented to accomplish the computation.
+
+On the Figure Figure \ref{comparacaoImpl} (b) we have a comparison of the execution time between the best island approach and the ForkJoin and Phaser approach.
+
+Through the data gathered we're able to see that the island approach takes on average less than 80 seconds than the Phaser approach. If we recall the Phaser implementation, it contains synchronization points, for example, before and after sorting the population. By having 24 inner threads, in every generation, every thread is required to wait for others in order to advance. This situation has an impact in performance, which is clearly visible on the Phaser violion plot. On the other hand, has the island6 only contains 4 inner threads, the amount of waiting required for each other is far less than waiting for 24 inner threads.
+
+The island approach in comparison with the ForkJoin approach demonstrates a difference on average of 40 seconds probably due to the costs of creating tasks every generation. Even though these costs are low, when multiplied by the population size and amount of generations, it may have an impact on execution time later on.
 
 
-\begin{figure}[htbp]
-\centering
-\adjincludegraphics[width=\textwidth, trim={35 110 25 20}, clip]{ComparisonPopulation}
-\caption{Comparison of the behavior when varying the population size.} \label{comparacaopopulacao}
-\end{figure}
+%\begin{figure}[htbp]
+%\centering
+%\adjincludegraphics[width=\textwidth, trim={35 110 25 20}, clip]{ComparisonPopulation}
+%\caption{Comparison of the behavior when varying the population size.} \label{comparacaopopulacao}
+%\end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \adjincludegraphics[width=\textwidth, trim={90 110 25 20}, clip]{ComparisonFitness}
 \caption{Comparison of the fitness achieved for each approach.} \label{comparacaofitness}
 \end{figure}
 
-\begin{figure}[htbp]
+The Figure \ref{comparacaofitness} addresses the differences between the approaches implemented.
+
+Due to the nature of separability and independence of individuals between islands \cite{islandModelGA} we can point the small improvement of fitness in the Island approach.
+The remaining parallel approaches have obtained a fitness higher than the linear approach. This may have happened due to the random nature of the generated mathematical expressions.
+
+%\begin{figure}[H]
+%\centering
+%\adjincludegraphics[width=\textwidth, trim={70 110 25 20}, clip]{ComparisonErrors}
+%\caption{Comparison between the approaches when evaluating its best individual in the test set.} \label{comparacaoerros}
+%\end{figure}
+
+\begin{figure}[H]
 \centering
-\adjincludegraphics[width=\textwidth, trim={70 110 25 20}, clip]{ComparisonErrors}
-\caption{Comparison between the approaches when evaluating its best individual in the test set.} \label{comparacaoerros}
+\adjincludegraphics[width=.85\textwidth, trim={120 70 100 50}, clip]{GraficoTodos.pdf}
+\caption{Comparison of fitness evolution through time on the parallel approaches} \label{comparacaoLinhas}
 \end{figure}
+
+The Figure \ref{comparacaoLinhas} above shows how the fitness values improve over team for each approach.
+
+During the first 250 generations the training set is splitten in half and tested in alternate. Therefore a mathematical expression which was the best individual last generation may not be as good in the current one influencing the overall fitness by arising it. In the figure, the ForkJoin and Phaser approaches both have 2 lines in the beginning which represent the data split. The island approacha didn't have much difference between generations and therefore it only contains one line.
+
+Through the results we are able to evaluate that the island approach achieves a better fitness earlier than the other parallel approaches.
 
 \subsection{Discussion}
 
