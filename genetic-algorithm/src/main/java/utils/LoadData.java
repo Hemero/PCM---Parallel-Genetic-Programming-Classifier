@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class LoadData {
 
 	// Atributos

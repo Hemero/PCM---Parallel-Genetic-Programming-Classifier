@@ -9,6 +9,7 @@ import net.objecthunter.exp4j.Expression;
 
 /**
  * Represents inner threads which can split the work with the main island
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public class InnerIslandThread extends Thread {
 	

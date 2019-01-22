@@ -9,7 +9,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang3.tuple.Pair;
 
 import abstractsyntaxtree.ExpressionTree;
-import main.Main;
 import net.objecthunter.exp4j.Expression;
 import utils.ParallelMergeSort;
 
@@ -17,6 +16,7 @@ import utils.ParallelMergeSort;
  * This represents an island where a certain population develops independently
  * from other islands. Ocasionally the best individual of this island is sent 
  * to other islands
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public class Island extends Thread {
 	
@@ -172,13 +172,10 @@ public class Island extends Thread {
 				this.population[this.population.length - 1] = this.expressionsBuffer.poll();
 				
 			this.sortPopulation();
+			System.out.println("Best individual at generation " + geracao + 
+					   " from island " + this.islandId + " with fitness " + 
+					this.population[0].getFitness() + ": " + this.population[0]);
 			
-			if (this.islandId == 0) {
-				
-				Main.contador.stop();
-				System.out.println(geracao + ";" + this.islandId + ";" + this.population[0].getFitness() + ";" + Main.contador.getDuration());
-			}
-			// I can create some amount of threads which will be available
 			if (this.highLimit - this.lowLimit > 10 && !this.threadBuffer.isEmpty()) 
 				this.createNewInnerIslandThreads(geracao);
 			

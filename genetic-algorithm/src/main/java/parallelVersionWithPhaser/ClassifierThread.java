@@ -4,10 +4,12 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadLocalRandom;
 
 import abstractsyntaxtree.ExpressionTree;
-import main.Main;
 import net.objecthunter.exp4j.Expression;
 import utils.ParallelMergeSort;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class ClassifierThread extends Thread {
 
 	// Constantes das definicoes do programa
@@ -104,8 +106,9 @@ public class ClassifierThread extends Thread {
 			// Sort the current population
 			if (this.threadId == 0) {
 				sortPopulation();			
-				Main.contador.stop();
-				System.out.println(geracao + ";" + this.population[0].getFitness() + ";" + Main.contador.getDuration());
+				System.out.println("Best individual at generation " + geracao + 
+						   " with fitness " + this.population[0].getFitness() + 
+						   ": " + this.population[0]);			
 			}
 			
 			// Wait for population to be sorted

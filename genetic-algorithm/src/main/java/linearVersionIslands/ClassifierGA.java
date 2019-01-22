@@ -2,6 +2,9 @@ package linearVersionIslands;
 
 import java.util.Scanner;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class ClassifierGA {
 
 	// Constantes

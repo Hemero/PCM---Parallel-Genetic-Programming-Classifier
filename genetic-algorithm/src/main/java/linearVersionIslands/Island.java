@@ -10,6 +10,7 @@ import net.objecthunter.exp4j.Expression;
  * This represents an island where a certain population develops independently
  * from other islands. Ocasionally the best individual of this island is sent 
  * to other islands
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public class Island extends Thread {
 

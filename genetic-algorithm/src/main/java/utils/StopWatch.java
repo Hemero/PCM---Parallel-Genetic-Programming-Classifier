@@ -2,6 +2,7 @@ package utils;
 
 /**
  * Class responsible to make time measurements
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public class StopWatch {
 

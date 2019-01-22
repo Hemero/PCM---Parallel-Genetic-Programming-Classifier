@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This enum contains binary operators
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public enum ExpressionBinaryOperator {
 

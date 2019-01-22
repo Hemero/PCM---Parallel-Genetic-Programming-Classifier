@@ -6,7 +6,7 @@ import abstractsyntaxtree.ExpressionTree;
 
 /**
  * Merge Sort paralelo implementado recorrendo a ForkJoin
- *
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public class ParallelMergeSort extends RecursiveAction {
 

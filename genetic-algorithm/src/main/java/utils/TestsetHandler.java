@@ -3,6 +3,9 @@ package utils;
 import abstractsyntaxtree.ExpressionTree;
 import net.objecthunter.exp4j.Expression;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class TestsetHandler {
 
 	private double[][] testset;

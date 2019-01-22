@@ -4,6 +4,9 @@ import java.util.concurrent.Phaser;
 
 import abstractsyntaxtree.ExpressionTree;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class ClassifierGA {
 
 	// Constantes
@@ -56,7 +59,7 @@ public class ClassifierGA {
 				e.printStackTrace();
 			}
 		
-		// System.out.println("Classification has terminated.");
+		System.out.println("Classification has terminated.");
 	}
 
 	public ExpressionTree getBestIndividual() {

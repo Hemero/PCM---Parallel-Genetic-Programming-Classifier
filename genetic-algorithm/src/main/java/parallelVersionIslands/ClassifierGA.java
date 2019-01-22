@@ -4,6 +4,9 @@ import java.util.Scanner;
 
 import abstractsyntaxtree.ExpressionTree;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class ClassifierGA {
 
 	// Constantes
@@ -27,6 +30,7 @@ public class ClassifierGA {
 		this.variables = variables;	
 	}
 	
+	@SuppressWarnings("resource")
 	public void startClassification() {
 	
 		int qtdIlhas = 0;
@@ -34,8 +38,8 @@ public class ClassifierGA {
 		Scanner leitor = new Scanner(System.in);
 		
 		do {
-			// System.out.println("Introduza uma quantidade de ilhas inferior a " + AMOUNT_THREADS + ": ");
-			qtdIlhas = 6;
+			System.out.println("Introduza uma quantidade de ilhas inferior ou igual a " + AMOUNT_THREADS + ": ");
+			qtdIlhas = leitor.nextInt();
 			
 			if (qtdIlhas <= 0 || qtdIlhas > AMOUNT_THREADS)
 				System.out.println(String.format(ERROR_QTD_ILHAS, qtdIlhas));

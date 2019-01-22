@@ -8,6 +8,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 /**
  * Immutable class representative of an expressions tree. Each node of this tree
  * may contain a value, a variable or a binary operator.
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public class ExpressionTree implements ExpressionTreeInterface {
 

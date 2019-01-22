@@ -6,6 +6,9 @@ import java.util.Random;
 import abstractsyntaxtree.ExpressionTree;
 import net.objecthunter.exp4j.Expression;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class ClassifierGA {
 
 	// Constantes do Programa 
@@ -30,7 +33,7 @@ public class ClassifierGA {
 	private int amountPartsTrainingSet;
 
 	private Random random;
-
+	
 	public ClassifierGA(double[][] data, double[] dataOutput, String[] variables) {
 
 		this.data = data;
@@ -58,9 +61,8 @@ public class ClassifierGA {
 		// Sort das arvores por ordem descendente
 		Arrays.sort(this.population);
 		
-//		System.out.println("Best individual at generation 0 with fitness " +
-//							this.population[0].getFitness() + ": " + this.population[0]);
-		System.out.println(0 + ";" + this.population[0].getFitness());
+		System.out.println("Best individual at generation 0 with fitness " +
+							this.population[0].getFitness() + ": " + this.population[0]);
 		
 		for (int geracao = 1; geracao < AMOUNT_ITERATIONS; geracao++) {
 
@@ -78,10 +80,10 @@ public class ClassifierGA {
 			// Set the new population
 			this.population = newPopulation;
 			
-//			System.out.println("Best individual at generation " + geracao + 
-//							   " with fitness " + this.population[0].getFitness() + 
-//							   ": " + this.population[0]);
-			System.out.println(geracao + ";" + this.population[0].getFitness());
+			System.out.println("Best individual at generation " + geracao + 
+							   " with fitness " + this.population[0].getFitness() + 
+							   ": " + this.population[0]);
+
 			newPopulation = new ExpressionTree[AMOUNT_POPULATION];
 		}
 	}

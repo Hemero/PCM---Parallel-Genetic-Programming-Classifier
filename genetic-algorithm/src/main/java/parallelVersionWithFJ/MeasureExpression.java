@@ -5,6 +5,9 @@ import java.util.concurrent.RecursiveAction;
 import abstractsyntaxtree.ExpressionTree;
 import net.objecthunter.exp4j.Expression;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class MeasureExpression extends RecursiveAction {
 	
 	/**

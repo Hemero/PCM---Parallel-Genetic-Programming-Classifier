@@ -4,6 +4,9 @@ import java.util.concurrent.RecursiveAction;
 
 import abstractsyntaxtree.ExpressionTree;
 
+/**
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
+ */
 public class MeasureFitness extends RecursiveAction {
 
 	/**

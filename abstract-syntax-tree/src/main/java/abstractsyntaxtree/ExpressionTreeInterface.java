@@ -4,6 +4,7 @@ import net.objecthunter.exp4j.Expression;
 
 /**
  * Represents an expression tree interface
+ * @author Faculdade de Ciencias da Universidade de Lisboa - FC47806 FC49034
  */
 public interface ExpressionTreeInterface extends Comparable<ExpressionTreeInterface>, Cloneable {
 	
