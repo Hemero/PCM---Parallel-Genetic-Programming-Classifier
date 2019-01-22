@@ -1,0 +1,4 @@
+population=500
+generations=500
+traininSplitLimit=250
+amountTests=30
