@@ -104,17 +104,17 @@ Both of these rates are updated according to the progressions they obtained for 
 
 \begin{algorithmic}
 \If {$mutationProgress < crossOverProgress$}
-        \State $mutationRate \gets min(1.0, mutationRate + mutationOffset)$
-        \State $crossoverRate \gets max(-popSize, crossoverRate - mutationOffset)$
+        \State $mutationRate := min(1.0, mutationRate + mutationOffset)$
+        \State $crossoverRate := max(-popSize, crossoverRate - mutationOffset)$
 \EndIf
 \If {$mutationProgress > crossOverProgress$}
-        \State $mutationRate \gets max(mutationOffset, mutationRate - mutationOffset)$
-        \State $crossoverRate \gets min(popSize, crossoverRate + mutationOffset)$
+        \State $mutationRate := max(mutationOffset, mutationRate - mutationOffset)$
+        \State $crossoverRate := min(popSize, crossoverRate + mutationOffset)$
 \EndIf
 \end{algorithmic}
 
 \subsection{Parallel Versions Implementation}
-\subsubsection{Parallel Population Sorting} \hfill \par
+\subsubsection{Parallel Population Sorting} \label{subsubsec:parallelSort} \hfill \par
 Due to parallel mergesort ease of implementation and advantages of execution time \cite{analysisMergeSort}, the sorting of the population by fitness has been implemented with a parallel mergesort with linear insertion sort when the amount of population to compute is smaller than an offset of 7. The population is splitten by half until the offset is reached and the insertion sort and merge algorithms' are computed.
 
 
@@ -122,8 +122,37 @@ Due to parallel mergesort ease of implementation and advantages of execution tim
 \textbf{TODO:}
 
 \subsubsection{Phaser} \hfill \par
+The Phaser Approach makes use of Phasers in order to introduce a synchronization point between all the Threads running. 
 
-\subsubsection{Island}
+First of, there has been made the decision of creating \(N\) threads proportional to the amount of available processors of the machine. A smaller value would not take advantage of all the processing power available, whereas a higher value would have an impact on the performance since the CPU scheduler would give each one of those \(N > availableProcessors\) some share of CPU time.
+
+Every Thread is responsible for a partial amount of the population. In order to maintain consistency in the population over the several generations and between different Threads it is required a synchronization point, the phaser. 
+
+The synchronization point has been introduced before and after the transition from the old population to the new one. This is a requirement since the following operations cannot happen until  every single expression from the new population has been introduced in the current population.
+
+It is also a requirement a synchronization point ahead and prior to the sorting  of the population. Once every single individual has transitioned from the old to the new population, the Thread with \(threadId := 0\) launches the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm. Once the algorithm finishes, every Thread gets through the synchronization point and a new generation starts.
+
+The phaser runs the Regular Genetic Algorithm approach in the computation of each individual.
+
+\subsubsection{Island} \hfill \par
+In order to take advantage of the amount of available processors we've also introduced an implementation of an Island Model Genetic Algorithm \cite{islandModelGA}.
+
+Our approach takes advantage of the multiple available processors to create and hold the computation of the islands. Each island has its own population, with size  \(populationSize / amountIslands \), and is independent of other islands, doesn't require synchronization points. Occasionally, every 20 generations, the best individual of an island is sent to a random island using a \emph{ConcurrentLinkedQueue}. Upon receiving a new individual, right before sorting the population, the last individual is replaced with the new one received.
+
+A naive approach would be to create one island per available processor. Our implementation allows us to create a variable amount of islands between 1 and the amount of available processors.
+
+ If the specified amount of islands is smaller than the amount of processors then the remaining available processors will be evenly distributed through the islands, allowing these to contain inner parallelization. The inner parallelization allows the island to split the population with the amount of threads it has been assigned and compute each generation quickier. As in the Phaser approach, it has been used a phaser to create synchronization points in essencial operations, such as transitioning from the old population to the new one and sorting it, between the threads of an island. In this case the island is responsible for calling the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm.
+
+When an island completes its computation, it redistributes the upcoming available threads with the rest of the islands starting by the end. This way we're able to take advantage of the processors once they're free. The re-destribution is implemented using a \(ConcurrentLinkedQueue<Pair<Integer, Integer>>\) where the island sends a message to create a new thread to another active island containing \(<islandId, \,newAmountThreads>\).
+
+Every island runs the Regular Genetic Algorithm approach to compute each individual.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.92\textwidth]{IslandModel.png}
+\caption{Example of thread redistribution, with 8 processors and 5 islands, after island 1 has terminated.} \label{islandDiagram}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
