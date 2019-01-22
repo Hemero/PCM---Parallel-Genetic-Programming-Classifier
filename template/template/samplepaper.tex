@@ -208,8 +208,14 @@ Due to parallel mergesort ease of implementation and advantages of execution tim
 The population is split in half until the offset is reached and the insertion sort and merge algorithms' are computed.
 
 \subsubsection{ForkJoin} \hfill \par
-\textbf{TODO:}
+ForkJoin was implemented through two extensions of the Java \(RecursiveAction\) class:
 
+\begin{itemize}
+\item $GeneratePopulation$ - to generate the AST population
+\item $Operations$ - to compute the GA operations (selection, crossover, mutation and fitness)
+\end{itemize}
+
+The limit from which the computation would start to be sequential was set to $2$. This allows the algorithm to divide until the end, to take advantage of the quantity of processors, and promote \textit{work stealing}.
 \subsubsection{Island} \hfill \par
 
 When an individual is sent to another island, it waits in a queue until it's turn arrives. Since this queue is accessed by all islands, it might lead to concurrency issues. To avoid that, we chose the \emph{ConcurrentLinkedQueue} to implement it.
