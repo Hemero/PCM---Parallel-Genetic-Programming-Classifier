@@ -105,15 +105,40 @@ The variable names were generated according to the dataset: from $x_{1}$ to $x_{
 
 \subsection{Fitness}
 
+The fitness function is the main responsible for the efficiency of the GA, so it must be wisely selected. In order to perform regression on the given data, it is necessary to bind the variables from the expression being evaluated and the corresponding data values. After that, the error for each data entry in computed. Bellow there is an algorithm line-up for the fitness measurement.
+
+\begin{algorithmic}
+
+   \State \textbf{Input}:$Data,DataOutput,Expression,Pop_{size}$
+   \State \textbf{Output}:$RMSE$
+   
+   \State $errors \gets 0$
+   \State $BindedData \gets BindDataToExpression(Data,Expression)$
+   
+   \For{$DataRow_{i} in BindedData$}
+      \State $errors \gets errors + (DataOutput_{i} - ExpEval(BindedData_{i},Expression))^2$
+   \EndFor
+   
+   \State $RMSE \gets \sqrt{\frac{errors}{Pop_{size}}}$
+   \State \textbf{return} $RMSE$
+\end{algorithmic}
+
+Normally, the fitness function is the objective function to be maximized throughout the execution. Instead, we opted to try to minimize the fitness. That decision is based on the fact that our goal is to minimize the error. We chose to use the Rooted Mean Squared Error (RMSE) as the measure for the error between the data output and the predicted output. It is easy to see that this operation is quite heavy, and depends a lot on the size of the dataset. To alleviate the load, we used an approximate function evaluation \cite{beasley1993overview} for the first $250$ generations. The approximate approach is based on the division of the training set in parts and assign each to each generation, in turns.
+
 \subsection{Selection}
 
-\subsection{Crossover}
+There are many different strategies to choose the individuals for crossover and mutation, like tournament selection or rank selection.Nevertheless, we chose the most popular one, known as proportionate selection (or roulette-wheel selection). In this strategy, the probability of an individual being chosen is directly proportionate to its fitness \cite{martins2016gacuda}.
 
-Since each tree represents an individual, it has a crossover operation which allows it to generate offspring by crossing itself with another tree in a single-point of crossing. This has been accomplished by randomly choosing and swapping two nodes from each tree.
+\subsection{Crossover and Mutation}
 
-\subsection{Mutation}
+For crossover and mutation there also are multiple strategies that can be chosen. For the sake of simplicity, we opted by following the simpler approaches: one-point crossover and the uniform mutation \cite{martins2016gacuda}.
 
-Every tree may also mutate itself by randomly choosing one node and changing its inner value. A constant binary node could have its inner content changed with a new value or variable, while binary operator nodes would have their operation changed.
+One-point crossover is accomplished by randomly selecting a point from both individuals selected and assigning the first part of the first parent to the first part of the offspring and the second part of the second parent to the second part of the offspring.
+
+The uniform mutation consists of randomly choosing one node and changing its inner value uniformly from the available values. A constant node could have its inner content changed with a new value or variable, while a binary operator node would have its operation changed to a random one (each equally likely of being chosen).
+
+Note that, in the context of our work, the point is one of the nodes of the tree. So, to choose the node randomly, we developed the algorithm that follows:
+%%%% poe aqui o algoritmo PAULO
 
 \subsection{Parallelization}
 
