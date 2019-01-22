@@ -11,9 +11,11 @@ import utils.TestsetHandler;
 
 public class Main {
 	
+	public static final StopWatch contador = new StopWatch();
+	
 	private static final int AMOUNT_TESTS = 30;
 	
-	private static final String CHOOSEN_OUTPUT = "forkjoin";
+	private static final String CHOOSEN_OUTPUT = "island";
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		
@@ -23,11 +25,11 @@ public class Main {
 		
 		for (int i = 0; i < AMOUNT_TESTS; i++) {
 			
-			System.setOut(new PrintStream(CHOOSEN_OUTPUT + "/" + CHOOSEN_OUTPUT + i + ".csv"));
+			//System.setOut(new PrintStream(CHOOSEN_OUTPUT + "/" + CHOOSEN_OUTPUT + i + ".csv"));
 			// SYSO For non-island versions
-			System.out.println("generation;fitness");
+			// System.out.println("generation;fitness;time");
 			// SYSO For island versions
-			// System.out.println("generation;island;fitness");
+			System.out.println("generation;island;fitness;time");
 			
 			startClassification(i, loadData);
 		}
@@ -35,7 +37,6 @@ public class Main {
 	
 	private static void startClassification(int iteracao, LoadData loadData) throws FileNotFoundException {
 
-		StopWatch contador = new StopWatch();
 		contador.start();
 		
 		// Variables
@@ -58,10 +59,10 @@ public class Main {
 		// parallelVersionWithFJ.ClassifierGA classificador = new parallelVersionWithFJ.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela com Phasers
-		parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
+		 parallelVersionWithPhaser.ClassifierGA classificador = new parallelVersionWithPhaser.ClassifierGA(data, dataOutput, variables);
 		
 		// Versao paralela de Ilhas
-		// parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
+		//parallelVersionIslands.ClassifierGA classificador = new parallelVersionIslands.ClassifierGA(data, dataOutput, variables);
 
 		classificador.startClassification();
 		contador.stop();

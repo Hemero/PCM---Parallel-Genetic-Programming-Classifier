@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang3.tuple.Pair;
 
 import abstractsyntaxtree.ExpressionTree;
+import main.Main;
 import net.objecthunter.exp4j.Expression;
 import utils.ParallelMergeSort;
 
@@ -166,10 +167,17 @@ public class Island extends Thread {
 			
 			// Sort the current population
 			this.phaser.arriveAndAwaitAdvance();
-			this.sortPopulation();
-
-			// System.out.println(geracao + ";" + this.islandId + ";" + this.population[0].getFitness());
 			
+			if (!this.expressionsBuffer.isEmpty())
+				this.population[this.population.length - 1] = this.expressionsBuffer.poll();
+				
+			this.sortPopulation();
+			
+			if (this.islandId == 0) {
+				
+				Main.contador.stop();
+				System.out.println(geracao + ";" + this.islandId + ";" + this.population[0].getFitness() + ";" + Main.contador.getDuration());
+			}
 			// I can create some amount of threads which will be available
 			if (this.highLimit - this.lowLimit > 10 && !this.threadBuffer.isEmpty()) 
 				this.createNewInnerIslandThreads(geracao);
@@ -202,7 +210,6 @@ public class Island extends Thread {
 			try {
 				thread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
