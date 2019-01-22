@@ -188,15 +188,9 @@ Every island runs the Regular Genetic Algorithm approach to compute each individ
 \section{Evaluation}
 
 \subsection{Experimental Setup}
-\textbf{TODO:} \\
-24 cores, \\ 1000 pop,\\  500 iteracoes, \\ 
-tamanho geracao inicial \(2^{10}\), \\ 
-tamanho maximo com crossover \(2^{15}\) \\
-dataset offset = 250 iteracoes. \\
-dataset split = 100 = 2 partes. \\
+The tests were made on a 24 cores machine with Intel(R) Xeon(R) CPU X5670@2.93GHz processors.
 
-In this section you should describe the machine(s) in which you are going to evaluate your system. Select the information that is relevant.
-
+The results have been gathered by running each approach previously presented 30 times, with a population of 1.000 for 500 generations. An individual, expression tree, was able to achieve \(2^{10} + 1\) nodes when created and up to \(2^{15} + 1\) nodes after crossing with another individual. For first 250 generations the data set has been split in half and each part was tested intercalated.
 
 \subsection{Results}
 
