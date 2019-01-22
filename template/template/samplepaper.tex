@@ -327,10 +327,11 @@ Jenetics \cite{jenetics} is another genetic programming implementation. It is a 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 
-Here you should resume the major conclusions taken from discussion. Ideally, these should align with the objectives introduced in the introduction.
+To summarize, the Island model is with no doubt  the best algorithm to use when applying regression to a dataset with a considerable amount of features - like the toxicity dataset used for this work. Moreover, it is essential to take into consideration the number of cores when choosing the number of islands for the model, since it affect greatly the execution time.
 
+In the future, other models could be also considered, such as the dynamic island model \cite{meng2017dynamic}, that shows a different type of interaction between different island individuals. Furthermore, the approach followed to compare the different algorithms should involve the benchmarks for more than a dataset, to have more confidence on the results. These are some improvements or ideas that could have been explored if time was not a constraint.
 
-You should also list the future work, i. e., tasks and challenges that were outside your scope, but are relevant.
+Finally, it would be interesting to determine if the rates for crossover and mutation, calculated by a GA, would  improve the error of the final solution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
