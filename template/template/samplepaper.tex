@@ -6,7 +6,8 @@
 \usepackage{algorithm}
 \usepackage[export]{adjustbox}
 \usepackage[noend]{algpseudocode}
-
+\usepackage{float}
+\usepackage{subfig}
 \usepackage{epstopdf} %converting to PDF
 
 \setcounter{secnumdepth}{3}
@@ -210,40 +211,51 @@ The results have been gathered by running each approach previously presented 30 
 
 FALTA COMPARACAO LINEAR COM ADAPTATIVA !!!!
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \adjincludegraphics[width=\textwidth, trim={85 110 25 20}, clip]{ComparisonIslands}
-\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\caption{Comparison of the performance of the islands approach with different number of islands .} \label{comparacaoilhas}
 \end{figure}
 
-\begin{figure}[htbp]
+The Figure \ref{comparacaoilhas} demonstrates the execution time when using different amount of islands.
+
+We're able to see that there is a significant difference in execution time between the islands 6,12 and islands 18,24. 
+
+Since the islands 6 and 12 are multiple of 24, they can respectively have 4 and 2 threads for inner parallelization. Both of these islands will supposedly finish at the same time, and therefore there won't be a need of redistributing the Threads.
+
+On the other hand the island 18, as it is not a multiple of 24, there are going to be islands with 2 threads, and islands with only 1 thread. The execution time will significantly be slower since the islands with only 1 thread represent a bottleneck in our system. However, because of the thread redistribution we are able to amortise the execution time allowing it to achieve a performance similar to the island 24 approach.
+
+\textbf{TODO: NAO SEI EXPLICAR A ilha 24}
+
+\begin{figure}[H]
 \centering
-\adjincludegraphics[width=\textwidth, trim={90 110 15 20}, clip]{ComparisonWithLinear}
-\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+
+\subfloat[Execution time comparison of linear implementation versus parallel implementations]{{ \adjincludegraphics[width=.75\textwidth, trim={90 110 15 20}, clip]{ComparisonWithLinear} }}%
+\qquad
+\subfloat[Execution time comparison of the parallel implementations]{{\adjincludegraphics[width=.75\textwidth, trim={90 110 25 20}, clip]{ComparisonNoLinear}}}%
+\caption{Comparison in execution time of the different implemented approaches.} \label{comparacaolinear}
+\label{comparacaoImpl}%
 \end{figure}
 
-\begin{figure}[htbp]
-\centering
-\adjincludegraphics[width=\textwidth, trim={90 110 25 20}, clip]{ComparisonNoLinear}
-\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
-\end{figure}
+The Figure \ref{comparacaoImpl} (a)
+
 
 \begin{figure}[htbp]
 \centering
 \adjincludegraphics[width=\textwidth, trim={35 110 25 20}, clip]{ComparisonPopulation}
-\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\caption{Comparison of the behavior when varying the population size.} \label{comparacaopopulacao}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \adjincludegraphics[width=\textwidth, trim={90 110 25 20}, clip]{ComparisonFitness}
-\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\caption{Comparison of the fitness achieved for each approach.} \label{comparacaofitness}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \adjincludegraphics[width=\textwidth, trim={70 110 25 20}, clip]{ComparisonErrors}
-\caption{Comparison of the performance of sequential and parallel versions of the algorithm.} \label{fig1}
+\caption{Comparison between the approaches when evaluating its best individual in the test set.} \label{comparacaoerros}
 \end{figure}
 
 \subsection{Discussion}
