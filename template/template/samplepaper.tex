@@ -142,7 +142,20 @@ One-point crossover is accomplished by randomly selecting a point from both indi
 The uniform mutation consists of randomly choosing one node and changing its inner value uniformly from the available values. A constant node could have its inner content changed with a new value or variable, while a binary operator node would have its operation changed to a random one (each equally likely of being chosen).
 
 Note that, in the context of our work, the point is one of the nodes of the tree. So, to choose the node randomly, we developed the algorithm that follows:
-%%%% poe aqui o algoritmo PAULO
+\begin{algorithmic}
+\If {$node \, is \, Constant$}
+        \State $return \,\, node$
+\Else 
+       \If {$index < node.left.size$} 
+           \State $return \,\, findNode(node.left,\,index)$
+       \ElsIf {$indice > node.left.size$}
+           \State $return \,\, findNode(node.right,\,index - node.left.size - 1)$
+       \Else
+	 \State $return \,\, node$
+       \EndIf
+\EndIf
+\end{algorithmic}
+
 
 \subsection{Adaptive Genetic Algorithm}
 The Adaptive implementation of a GA diverges from the regular implementation by not having the mutation and crossover rates fixed. Instead, the mutation and crossover rates are dynamic, and adapt depending on the progression made by each operation in the last generation \cite{adaptativeCrossOverMutation}.
@@ -236,8 +249,19 @@ The tests were made on a 24 cores machine with Intel(R) Xeon(R) CPU X5670@2.93GH
 The results have been gathered by running each approach previously presented 30 times, with a population of 1.000 for 500 generations. An individual, expression tree, was able to achieve \(2^{10} + 1\) nodes when created and up to \(2^{15} + 1\) nodes after crossing with another individual. For first 250 generations the data set has been split in half and each part was tested intercalated.
 
 \subsection{Results}
+\begin{figure}[H]
+\centering
+\subfloat[Execution time comparison of Regular and Adaptative GA]{{ \adjincludegraphics[width=.45\textwidth, trim={50 110 15 20}, clip]{ComparisonNormalAdapTime} }}%
+\qquad
+\subfloat[Comparison in fitness of Regular and Adaptative GA]{{\adjincludegraphics[width=.45\textwidth, trim={50 110 25 20}, clip]{ComparisonNormalAdapFitness}}}%
+\caption{Analysis of fitness and execution time performance of Regular and Adaptative Genetic Algorithms} \label{comparacaoNA}
+\label{comparacaoImpl}%
+\end{figure}
+The Figure \ref{comparacaoNA} allows us to consider if it is worth using an Adaptative Genetic Algorithm Approach over a regular one.
 
-The Figure allows us to consider if it is worth using an Adaptative Genetic Algorithm Approach over a regular one, despite the performance issues.
+Figure (a) compares the execution time of the regular and the adaptative versions. As antecipated, the Adaptative takes longer to complete the 500 generations due to having to recalculate the fitness of an individual after every crossover if it is eligible for mutation. The recalculation increased the execution time by almost 2.000 seconds, 30 minutes. The extra time could altough be justified if there ins a major growth in the fitness.
+
+Figure (b) demonstrates an overall improvement from the Adaptative version over the Regular one. The extra 2000 seconds resulted in a progress of 100 fitness, an improvement which is not significant enough to justify the longer processing time.
 
 \begin{figure}[H]
 \centering
@@ -257,7 +281,6 @@ The island 24 features has an unexpected performance. Has the population is spli
 
 \begin{figure}[H]
 \centering
-
 \subfloat[Execution time comparison of linear implementation versus parallel implementations]{{ \adjincludegraphics[width=.75\textwidth, trim={90 110 15 20}, clip]{ComparisonWithLinear} }}%
 \qquad
 \subfloat[Execution time comparison of the parallel implementations]{{\adjincludegraphics[width=.75\textwidth, trim={90 110 25 20}, clip]{ComparisonNoLinear}}}%
@@ -311,7 +334,13 @@ Through the results we are able to evaluate that the island approach achieves a 
 
 \subsection{Discussion}
 
-Here you should discuss the results on a high level. For instance, based on our results, the parallelization of the merge-sort is relevant as no other parallel work occurs at the same time, and the complexity $O(N log(N))$ can have a large impact when the number of individuals is high.
+We could also conclude that even though the Adaptative Genetic Algorithm allows an overall improvement over the evaluated fitness, it drawbacks, such as the execution time, which makes it an ineligible genetic algorithm approach in our case.
+
+According to the results we are able to conclude that the best approach was the Island. Inside of the Island approach the right amount of islands according to results were 6 Islands, a quarter of the amount of available processors. This allows inner parallelization to happen without to many synchronization points while allowing a higher population diversity.
+
+The parallelization of the merge-sort was relevant on the Island 24 Approach as it influenced the execution time since multiple parallel work was occuring at the same time. Due to the great amount of parallel work the CPU would have to schedule this work having an impact on the processing time.
+
+The parallelization with Phasers with a low amount of population and high amount available processors represents a problem in terms of synchronization problems. With a low amount of population the costs of synchronization between threads with phasers is high enough to have an impact on execution time. Therefore for a smaller population size a ForkJoin approach seems more reasnoable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -336,11 +365,21 @@ You should also list the future work, i. e., tasks and challenges that were outs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements}
 
-First Author wrote the part of the program implemented the phasers. Second Author implemented the MergeSort in parallel. 
+As for the Abstract Syntax Tree, Paulo Santos implemented the structure of the tree, the crossOver method, toString and comparator for the evaluation of the mathematical expression. Maria Fidalgo was responsible for randomly generating the tree and mutation of a tree node.
 
-Both authors wrote this paper, with First Author focusing on the introduction, related work and conclusions while the Second Author focused on approach and evaluation.
+Both Authors participated on the implementation of the Sequential Version of the classifier and the LoadData class to load the data set.
 
-Each author spent around 30 hours on this project.
+Maria Fidalgo was responsible for the TestsetHandler where the evaluation of the test set with the best individual occurs.
+
+Paulo Santos implemented the Parallel MergeSort Algorithm and the Adaptative Genetic Algorithm.
+
+Maria Fidalgo implemented the ForkJoin Approach. Paulo Santos implemented the Phaser Approach.
+
+Both Authors participated in the creation of the Islands Approach.
+
+Both Authors wrote this paper, with Maria Fidalgo focusing on Abstract, Introduction, Genetic Algorithm, Related Work and Conclusions while Paulo Santos focused more on Implementation, Discussion and Results. Both participated on the Approach.
+
+Each author spent around 50 hours on this project.
 
 \bibliographystyle{splncs04}
 \bibliography{bibliography}
