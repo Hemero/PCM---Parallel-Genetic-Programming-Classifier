@@ -57,15 +57,44 @@ Finally, we will demonstrate the experimental evaluation and compare with each o
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Background}
+\section{Genetic Algorithm}
 
-This is an optional section, as it depends on your project. In projects where a given specific knowledge is required to understand the article, you should give a brief introduction of the required concepts. In the case of genetic algorithms, you should present the basic algorithm in this section.
+\begin{algorithmic}
+   \State \textbf{Input}:$Max_{gen},Pop_{size},P_{cross},P_{mut},P_{reproduction}$
+   \State \textbf{Output}:$S_{best}$
+   \State $Population\gets InitializePopulation(Pop_{size},nodes_{func},nodes_{term})$
+   \State $MeasureFitness(Population)$
+   \State $S_{best} \gets GetBestSolution(Population)$
+   \State $Generation_{i} \gets 0$
+   
+   \While{$Generation_{i} \not= Max_{gen}$}
+      \State $Generation_{i} \gets Generation_{i} + 1$
+      \State $NewPopulation \gets \emptyset$
+      \State $AddElitesToNewPopulation(Population,NewPopulation)$
+   
+      \While{$Size(NewPopulation) < Pop_{size}$}
+         \State $Ind_{1}, Ind_{2} \gets SelectForCrossover(Population, P_{reproduction})$
+         \State $NewGeneration \gets NewGeneration \cup Mutate(Crossover(Ind_{1},Ind_{2},P_{cross}),P_{mut})$
+         \State $MeasureFitness(NewPopulation)$
+      \EndWhile
+      
+      \State $S_{best} \gets GetBestSolution(NewPopulation)$
+      \State $Population \gets NewPopulation$
+   \EndWhile
+   \State \textbf{return} $S_{best}$
+\end{algorithmic}
+
+\subsection{Fitness}
+
+\subsection{Crossover}
+
+\subsection{Mutation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approach}
 
-In this section, you should present your approach. Notice that an approach may be different than an implementation. An approach should be generic and ideally applied for different machines, virtual machines or languages. You should present algorithms or generic diagrams explaining the approach.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
