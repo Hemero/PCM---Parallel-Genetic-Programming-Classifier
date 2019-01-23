@@ -251,7 +251,7 @@ Each island is implemented using the phaser approach for its inner parallelizati
 \subsection{Experimental Setup}
 The tests were made on a 24 cores machine with Intel(R) Xeon(R) CPU X5670@2.93GHz processors.
 
-The results have been gathered by running each approach previously presented 30 times, with a population of 1.000 for 500 generations. An individual, expression tree, was able to achieve \(2^{10} + 1\) nodes when created and up to \(2^{15} + 1\) nodes after crossing with another individual. For first 250 generations the data set has been split in half and each part was tested intercalated.
+The results have been gathered by running each approach 30 times, with a population of 1.000 individuals for 500 generations. An individual - expression tree - can have up to \(2^{10} + 1\) nodes when created and \(2^{15} + 1\) after crossover. For the first 250 generations, the training has been split in half and each part was tested in turns. For the rest of them, the whole training set was used.
 
 \subsection{Results}
 \begin{figure}[H]
@@ -259,14 +259,12 @@ The results have been gathered by running each approach previously presented 30 
 \subfloat[Execution time comparison of Regular and Adaptative GA]{{ \adjincludegraphics[width=.45\textwidth, trim={50 110 15 20}, clip]{ComparisonNormalAdapTime} }}%
 \qquad
 \subfloat[Comparison in fitness of Regular and Adaptative GA]{{\adjincludegraphics[width=.45\textwidth, trim={50 110 25 20}, clip]{ComparisonNormalAdapFitness}}}%
-\caption{Analysis of fitness and execution time performance of Regular and Adaptative Genetic Algorithms} \label{comparacaoNA}
+\caption{Analysis of fitness and execution time performance of Regular and Adaptive GA} \label{comparacaoNA}
 \label{comparacaoImpl}%
 \end{figure}
-The Figure \ref{comparacaoNA} allows us to consider if it is worth using an Adaptative Genetic Algorithm Approach over a regular one.
+Figure \ref{comparacaoNA} leads us to conclude that the Adaptive GA approach does not have great advantages over the regular one.
 
-Figure (a) compares the execution time of the regular and the adaptative versions. As antecipated, the Adaptative takes longer to complete the 500 generations due to having to recalculate the fitness of an individual after every crossover if it is eligible for mutation. The recalculation increased the execution time by almost 2.000 seconds, 30 minutes. The extra time could altough be justified if there ins a major growth in the fitness.
-
-Figure (b) demonstrates an overall improvement from the Adaptative version over the Regular one. The extra 2000 seconds resulted in a progress of 100 fitness, an improvement which is not significant enough to justify the longer processing time.
+Figure (a) compares the execution time of the regular and the adaptive versions. As anticipated, the Adaptive takes longer to complete the 500 generations due to recalculating the fitness of an individual after every crossover and mutation (if the operation occurs). The recalculation increased the execution time by approximately 1.000 seconds (+8\%). The extra time could be justifiable if the fitness was much lower than the regular version, which is not the case, as shown by figure (b), where the overall improvement is only by 100 (6\%).
 
 \begin{figure}[H]
 \centering
@@ -276,13 +274,11 @@ Figure (b) demonstrates an overall improvement from the Adaptative version over 
 
 The Figure \ref{comparacaoilhas} demonstrates the execution time when using different amount of islands.
 
-We're able to see that there is a significant difference in execution time between the islands 6,12 and islands 18,24. 
+We are able to see that there is a significant difference in the execution time between the models with 6 and 12 islands, and 18 and 24 islands. Since the islands 6 and 12 are multiple of 24, they can, respectively, have 4 and 2 threads for inner parallelization. In both cases, the islands of each model will finish at the same time, and, consequently, the redistributing threads will not be needed.
 
-Since the islands 6 and 12 are multiple of 24, they can respectively have 4 and 2 threads for inner parallelization. Both of these islands will supposedly finish at the same time, and therefore there won't be a need of redistributing the Threads.
+On the other hand, the 18 island model, as it is not a multiple of 24, there are going to be islands with 2 threads, and islands with only 1 thread. The execution time will be significantly slower since the islands with only 1 thread represent a bottleneck in our model. However, because of the implemented thread redistribution system, we are able to amortize the execution time, allowing it to achieve a performance similar to the 24 island model.
 
-On the other hand the island 18, as it is not a multiple of 24, there are going to be islands with 2 threads, and islands with only 1 thread. The execution time will significantly be slower since the islands with only 1 thread represent a bottleneck in our system. However, because of the thread redistribution we are able to amortise the execution time allowing it to achieve a performance similar to the island 24 approach.
-
-The island 24 features has an unexpected performance. Has the population is splitten evenly between the 24 islands it was expected to behave similarly to other island approaches with multiples of 24, however this is not the case. Our assumption relies on the Parallel MergeSort implemented. Each island is going to create and execute tasks to perform the sorting operation. The thread pool executor, when executed, creates N amount of threads corresponding to the amount of available proccesses. By having N amount of islands running, and each one of them creates a pool of 24 threads to compute the sorting algorithm, by the end we'll have $N*N$ threads. The CPU will have to schedule all of these threads, which implies an issue in terms of performance.
+The island 24 features has an unexpected performance. As the population is split evenly between the 24 island model was expected to behave similarly to other island models with multiples of 24, however this is not the case. Our assumption relies on the Parallel MergeSort implemented. Each island is going to create and execute tasks to perform the sorting operation. The thread pool executor, when executed, creates $N$ amount of threads corresponding to the amount of available processors. By having $N$ islands running, and each one of them creating a pool of 24 threads to compute the sorting algorithm, by the end we will have $N+N$ threads. Therefore, the CPU will have to schedule all of these threads, which implies decrease of performance.
 
 \begin{figure}[H]
 \centering
@@ -293,13 +289,13 @@ The island 24 features has an unexpected performance. Has the population is spli
 \label{comparacaoImpl}%
 \end{figure}
 
-The Figure \ref{comparacaoImpl} (a) represents the difference between the linear approach and the speedup obtained from the parallel aproaches. The linear approach required up to 50x the time from the best parallel approach implemented to accomplish the computation.
+Figure \ref{comparacaoImpl} (a) represents the difference between the linear approach and the speedup obtained from the parallel approaches. The linear approach required up to 50x the time from the best parallel approach implemented to finish the computation.
 
-On the Figure Figure \ref{comparacaoImpl} (b) we have a comparison of the execution time between the best island approach and the ForkJoin and Phaser approach.
+On Figure \ref{comparacaoImpl} (b) we have a comparison of the execution time between the best island approach and the ForkJoin and Phaser approach.
 
-Through the data gathered we're able to see that the island approach takes on average less than 80 seconds than the Phaser approach. If we recall the Phaser implementation, it contains synchronization points, for example, before and after sorting the population. By having 24 inner threads, in every generation, every thread is required to wait for others in order to advance. This situation has an impact in performance, which is clearly visible on the Phaser violion plot. On the other hand, has the island6 only contains 4 inner threads, the amount of waiting required for each other is far less than waiting for 24 inner threads.
+Through the data gathered we are able to see that the island approach takes, on average, less than 80 seconds than the Phaser approach. Recall that the Phaser implementation contains synchronization points, for example, before and after sorting the population. By having 24 inner threads, in every generation, every thread is required to wait for others in order to advance. This situation has a negative impact in performance, which is clearly visible on the Phaser violin plot. On the other hand, since the 6 island model only contains 4 inner threads, the waiting time required is far less than for 24 inner threads.
 
-The island approach in comparison with the ForkJoin approach demonstrates a difference on average of 40 seconds probably due to the costs of creating tasks every generation. Even though these costs are low, when multiplied by the population size and amount of generations, it may have an impact on execution time later on.
+The island approach, in comparison with the ForkJoin approach, demonstrates a 40 second difference, on average. This can be explain due to the costs of creating tasks every generation. Even though these costs are low, when multiplied by the population size and amount of generations, it may have a negative impact on the execution time.
 
 
 %\begin{figure}[htbp]
@@ -316,14 +312,10 @@ The island approach in comparison with the ForkJoin approach demonstrates a diff
 
 The Figure \ref{comparacaofitness} addresses the differences between the approaches implemented.
 
-Due to the nature of separability and independence of individuals between islands \cite{islandModelGA} we can point the small improvement of fitness in the Island approach.
+Due to the nature of separability and independence of individuals between islands \cite{islandModelGA}, we can point the  improvement of fitness in the Island approach.
 The remaining parallel approaches have obtained a fitness higher than the linear approach. This may have happened due to the random nature of the generated mathematical expressions.
 
-%\begin{figure}[H]
-%\centering
-%\adjincludegraphics[width=\textwidth, trim={70 110 25 20}, clip]{ComparisonErrors}
-%\caption{Comparison between the approaches when evaluating its best individual in the test set.} \label{comparacaoerros}
-%\end{figure}
+Nevertheless, it is important to note that there are not significant differences between the fitness of the several approaches.
 
 \begin{figure}[H]
 \centering
@@ -333,19 +325,27 @@ The remaining parallel approaches have obtained a fitness higher than the linear
 
 The Figure \ref{comparacaoLinhas} above shows how the fitness values improve over team for each approach.
 
-During the first 250 generations the training set is splitten in half and tested in alternate. Therefore a mathematical expression which was the best individual last generation may not be as good in the current one influencing the overall fitness by arising it. In the figure, the ForkJoin and Phaser approaches both have 2 lines in the beginning which represent the data split. The island approacha didn't have much difference between generations and therefore it only contains one line.
+During the first 250 generations the training set is split in half and tested in alternate. Therefore, a mathematical expression which was the best individual in the last generation may not be as good in the current one, influencing the overall fitness, raising it. In the figure, the ForkJoin and Phaser approaches both have 2 lines in the beginning, representing the data split. The island approach did not have much differences between generations and, therefore, it only contains one line.
 
-Through the results we are able to evaluate that the island approach achieves a better fitness earlier than the other parallel approaches.
+\begin{figure}[H]
+\centering
+\adjincludegraphics[width=\textwidth, trim={70 110 25 20}, clip]{ComparisonErrors}
+\caption{Comparison between the approaches when evaluating its best individual in the test set.} \label{comparacaoerros}
+\end{figure}
+
+Figure \ref{comparacaoerros} shows the errors obtained in the test set for the Phaser, Linear, 6 island and ForkJoin models. Phaser and ForkJoin do not present much differences, and the error is quite low. The sequential version (linear) presents the highest errors, some being as high as 30000. The Island model obtained a great dispersion to the right side of the median. Even so, many error values are concentrated around 1000 and 2000 of fitness. 
+
+Through the results, we are able to conclude that the island approach achieves a better fitness earlier than the other parallel approaches, making it the most suitable for the task.
 
 \subsection{Discussion}
 
-We could also conclude that even though the Adaptative Genetic Algorithm allows an overall improvement over the evaluated fitness, it drawbacks, such as the execution time, which makes it an ineligible genetic algorithm approach in our case.
+In conclusion, even though the Adaptive GA allows an overall improvement over the evaluated fitness, it has some drawbacks, such as the execution time.
 
-According to the results we are able to conclude that the best approach was the Island. Inside of the Island approach the right amount of islands according to results were 6 Islands, a quarter of the amount of available processors. This allows inner parallelization to happen without to many synchronization points while allowing a higher population diversity.
+According to the results we are able to conclude that the best approach is the Island model. Inside of the Island approach, the right amount of islands is a quarter of the amount of available processors - 6 for the machine used. This allows inner parallelization to happen without to many synchronization points while allowing a higher population diversity.
 
-The parallelization of the merge-sort was relevant on the Island 24 Approach as it influenced the execution time since multiple parallel work was occuring at the same time. Due to the great amount of parallel work the CPU would have to schedule this work having an impact on the processing time.
+The parallelization of the merge-sort is relevant on the Island 24 approach, as it influences the execution time. That is, since multiple parallel work is occurring at the same time, the CPU must to schedule this work, worsening the execution time.
 
-The parallelization with Phasers with a low amount of population and high amount available processors represents a problem in terms of synchronization problems. With a low amount of population the costs of synchronization between threads with phasers is high enough to have an impact on execution time. Therefore for a smaller population size a ForkJoin approach seems more reasnoable.
+The parallelization with phasers with a low amount of population and high amount available processors represents a problem in terms of synchronization problems. With a low amount of population the costs of synchronization between threads with phasers is high enough to have an impact on execution time. Therefore, for a smaller population size a ForkJoin approach accomplishes better results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -353,19 +353,21 @@ The parallelization with Phasers with a low amount of population and high amount
 
 Several implementations of the genetic algorithm were made throughout the years. We will shortly talk about two implementations and how they fit in the scope of our work.
 
-Dominic and Willis  \cite{GPTIPS} developed a MATLAB toolbox, GPTIPS, which is able to perform regression through genetic programming. The main difference between their approach and  ours is that they do not explore the parallelism of the algorithm, focusing on the usability of the toolbox. Moreover, they chose to include nonlinear operators, that we decided to leave out. Our work is, therefore, important to whom intends to develop a fast approach of the genetic classifier. Additionally, GPTIPS requires the purchase of a payed software (MATLAB), available to a less broader population.
+Dominic and Willis  \cite{GPTIPS} developed a MATLAB toolbox, GPTIPS, which is able to perform regression through genetic programming. The main difference between their approach and ours is that they do not explore the parallelism of the algorithm, focusing on the usability of the toolbox. Moreover, they chose to include nonlinear operators, which we decided to leave out. Our work is, therefore, important to whom intends to develop a fast approach of the GA for regression. Additionally, GPTIPS requires the purchase of a payed software (MATLAB), available to a less broader population.
 
-Jenetics \cite{jenetics} is another genetic programming implementation. It is a Java library designed to abstract different concepts within the genetic programming panorama, such as Gene, Genotype and Chromosome, allowing it to serve a vast spectrum of domains. This library implements the Java Stream Interface and provides ForkJoin Parallelization. This is, therefore, a generic purpose implementation for genetic algorithm. On the other hand, in our work we provided a study of genetic programming specific for regression, where other parallelization techniques were able to achieve better results than ForkJoin, like the Island Models.
+Jenetics \cite{jenetics} is another genetic programming implementation. It is a Java library designed to abstract different concepts within the genetic programming panorama, such as Gene, Genotype and Chromosome, allowing it to serve a vast spectrum of domains. This library implements the Java $Stream Interface$ and provides ForkJoin Parallelization. This is, therefore, a generic purpose implementation for the GA. On the other hand, in our work we provide a study of GA specific for Linear Regression, where other parallelization techniques were able to achieve better results than ForkJoin, like the Island models.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 
-To summarize, the Island model is with no doubt  the best algorithm to use when applying regression to a dataset with a considerable amount of features - like the toxicity dataset used for this work. Moreover, it is essential to take into consideration the number of cores when choosing the number of islands for the model, since it affect greatly the execution time.
+To summarize, the Island model is, with no doubt,  the best algorithm to use when applying Linear Regression to a dataset with a considerable amount of features - like the toxicity dataset used for this work. Moreover, it is essential to take into consideration the number of cores when choosing the number of islands for the model, since it affects greatly the execution time.
 
-In the future, other models could be also considered, such as the dynamic island model \cite{meng2017dynamic}, that shows a different type of interaction between different island individuals. Furthermore, the approach followed to compare the different algorithms should involve the benchmarks for more than a dataset, to have more confidence on the results. These are some improvements or ideas that could have been explored if time was not a constraint.
+In the future, other models could also be considered, such as the Dynamic Island model \cite{meng2017dynamic}, that uses a different interaction between individuals from different islands.
 
-Finally, it would be interesting to determine if the rates for crossover and mutation, calculated by a GA, would  improve the error of the final solution.
+Furthermore, the approach used to compare the different algorithms should involve the benchmarks for more than a dataset, to increase the confidence on the results. These are some improvements and ideas that could have been explored if time was not a constraint.
+
+Finally, it would be interesting to determine if the rates for crossover and mutation, calculated by a GA, would  improve the fitness of the final solution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -373,17 +375,17 @@ Finally, it would be interesting to determine if the rates for crossover and mut
 
 As for the Abstract Syntax Tree, Paulo Santos implemented the structure of the tree, the crossOver method, toString and comparator for the evaluation of the mathematical expression. Maria Fidalgo was responsible for randomly generating the tree and mutation of a tree node.
 
-Both Authors participated on the implementation of the Sequential Version of the classifier and the LoadData class to load the data set.
+Both Authors participated in the implementation of the Sequential Version of the classifier and the LoadData class to load the data set.
 
 Maria Fidalgo was responsible for the TestsetHandler where the evaluation of the test set with the best individual occurs.
 
-Paulo Santos implemented the Parallel MergeSort Algorithm and the Adaptative Genetic Algorithm.
+Paulo Santos implemented the Parallel MergeSort Algorithm and the Adaptive GA.
 
-Maria Fidalgo implemented the ForkJoin Approach. Paulo Santos implemented the Phaser Approach.
+Maria Fidalgo implemented the ForkJoin approach. Paulo Santos implemented the Phaser approach.
 
-Both Authors participated in the creation of the Islands Approach.
+Both Authors participated in the creation of the Islands approach.
 
-Both Authors wrote this paper, with Maria Fidalgo focusing on Abstract, Introduction, Genetic Algorithm, Related Work and Conclusions while Paulo Santos focused more on Implementation, Discussion and Results. Both participated on the Approach.
+Both Authors wrote this paper, with Maria Fidalgo focusing on Abstract, Introduction, Genetic Algorithm, Related Work and Conclusions while Paulo Santos focused on Implementation, Discussion and Results. Both participated on the Approach.
 
 Each author spent around 50 hours on this project.
 
