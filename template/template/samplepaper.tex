@@ -95,6 +95,10 @@ The implementation of a GA typically starts with a population of random individu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approach}
 
+\subsection{Train and Test sets}
+
+To properly evaluate the result of each approach, the dataset was firstly shuffled and then separated  into training set (70\%) and test set (30\%). During the execution of the algorithms, only the training set was used. Afterwards, the best individual determined by the algorithm was used to calculate the error in the test set.
+
 \subsection{Encoding}
 
 %% types of encoding
