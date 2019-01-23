@@ -29,7 +29,7 @@ Maria Fidalgo
 \maketitle
 
 \begin{abstract}
-This paper presents a series of experimental results to determine which parallel genetic algorithm is a better fit to perform regression. In previous research some authors have studied parallel genetic algorithms applied to different tasks or genetic algorithms for regression without focusing on its parallelization. Although the research was well conducted, some points could be improved, like the usage of more than one test case to compare the algorithms. Nevertheless, we will show how the Island Model is the better approach, and which is the ideal amount of islands \textit{versus} number of cores available on the machine. Firstly, the sequential version was implemented, followed by the parallel approaches, starting by the simplest - like the ForkJoin and Phaser - and finished by developing the island model. This work is helpful for anyone who needs to apply regression to data with a lot of features.
+This paper presents a series of experimental results to determine which parallel genetic algorithm is a better fit to perform linear regression. In previous research some authors have studied parallel genetic algorithms applied to different tasks or genetic algorithms for regression without focusing on its parallelization. Although the research was well conducted, some points could have been improved, like the usage of more than one test case to compare the algorithms. Nevertheless, we will show how the island model represents the better implemented approach, and which is the ideal amount of islands \textit{versus} number of cores available on the machine. Firstly, the sequential version was implemented, followed by the parallel approaches, starting by the simplest - like the ForkJoin and Phaser - and finished by developing the island model. This work is helpful for anyone who needs to apply regression to data with a lot of features.
 
 \keywords{Parallel Genetic Programming \and Regression \and Island Model.}
 \end{abstract}
@@ -41,13 +41,13 @@ This paper presents a series of experimental results to determine which parallel
 
 Genetic Algorithms (GAs) are metaheuristic searching algorithms where the main idea lies in following the same principles as Natural Selection and Evolution in Biology \cite{sivanandam2008genetic}. That is, the algorithms work around a \textit{population} of potential solutions for the problem, the \textit{individuals}. The population changes during the execution of the algorithm, mimicking the evolution of a real population of living beings, from generation to generation, where the fitter individuals are more likely to survive and reproduce.
 
-The algorithm is composed by three main operations: Fitness, Crossover, Mutation and Selection. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; and Mutation (or asexual reproduction) produces random changes to an individual; Selection determines how the individuals are chosen for the Crossover and Mutation \cite{langdon1995genetic}.
+The algorithm is composed by four main operations: Fitness, Crossover, Mutation and Selection. Fitness measures how good an individual is; Crossover (or sexual reproduction) generates a new solution based on two existing ones, simulating the breeding of two individuals; Mutation (or asexual reproduction) produces random changes to an individual; Selection determines how the individuals are chosen for the Crossover and Mutation \cite{langdon1995genetic}.
 
 Due to the characteristics of the GAs, applications are often related to optimization \cite{sivanandam2008genetic}, such as the Traveling Salesman Problem \cite{grefenstette1985genetic}, classification \cite{5340522}, decision making \cite{George:2012:GAB:2345396.2345426} and prediction \cite{etemadi2009genetic}.
 
 Prediction can be accomplished through Regression Analysis, which is the task of modeling a random variable $Y$ as a function of a vector of random variables $X$. This may be translated as the task of finding the mathematical expression best suited to explain $Y$. Regression models presuppose the existence of constants, called \textit{parameters}, that are to be estimated from the data \cite{rawlings2001applied}.
 
-However, when using a GA for this type of problem, it is not the parameters that we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
+However, when using a GA for this type of problem, parameters are not we want to estimate but the whole mathematical expression. Therefore, we will be looking for the one that minimizes the error between the value provided by the model and the actual value.
 
 In this work, we explore different parallelizations of the Genetic Algorithm for regression, using the toxicity dataset \cite{krawiec2013genetic}. We will start by introducing the algorithm and its operations in further detail. Next, we will present the several approaches studied:
 
@@ -66,7 +66,7 @@ Finally, we will demonstrate the experimental evaluation and compare with each o
 
 The implementation of a GA typically starts with a population of random individuals. Then, the population is evaluated, and reproduction operations take place \cite{whitley1994genetic}. Bellow, we present the pseudo-code for the genetic algorithm. The $AddElitesToNewPopulation$ is an optional but often used step, where a designated percentage of the best individuals are directly transfered to the new population (without any modification). This helps the algorithm to converge faster and prevents it from losing the best solutions \cite{martins2016gacuda}.
 
-\begin{algorithmic}
+\begin{algorithmic} \small
    \State \textbf{Input}:$Max_{gen},Pop_{size},P_{cross},P_{mut},P_{reproduction}$
    \State \textbf{Output}:$S_{best}$
    \State $Population\gets InitializePopulation(Pop_{size},nodes_{func},nodes_{term})$
@@ -77,11 +77,11 @@ The implementation of a GA typically starts with a population of random individu
    \While{$Generation_{i} \not= Max_{gen}$}
       \State $Generation_{i} \gets Generation_{i} + 1$
       \State $NewPopulation \gets \emptyset$
-      \State $AddElitesToNewPopulation(Population,NewPopulation)$ \Comment{Optional step}
+      \State $AddElitesToNewPopulation(Population,NewPopulation)$ \Comment{Optional}
    
       \While{$Size(NewPopulation) < Pop_{size}$}
          \State $Ind_{1}, Ind_{2} \gets SelectForCrossover(Population, P_{reproduction})$
-         \State $NewGeneration \gets NewGeneration \cup Mutate(Crossover(Ind_{1},Ind_{2},P_{cross}),P_{mut})$
+         \State $NewGeneration \gets NewGeneration \, \cup \, Mutate(Crossover(Ind_{1},Ind_{2},P_{cross}),P_{mut})$
          \State $MeasureFitness(NewPopulation)$
       \EndWhile
       
