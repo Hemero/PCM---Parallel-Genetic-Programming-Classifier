@@ -29,7 +29,7 @@ Maria Fidalgo
 \maketitle
 
 \begin{abstract}
-This paper presents a series of experimental results to determine which parallel genetic algorithm is a better fit to perform linear regression. In previous research some authors have studied parallel genetic algorithms applied to different tasks or genetic algorithms for regression without focusing on its parallelization. Although the research was well conducted, some points could have been improved, like the usage of more than one test case to compare the algorithms. Nevertheless, we will show how the island model represents the better implemented approach, and which is the ideal amount of islands \textit{versus} number of cores available on the machine. Firstly, the sequential version was implemented, followed by the parallel approaches, starting by the simplest - like the ForkJoin and Phaser - and finished by developing the island model. This work is helpful for anyone who needs to apply regression to data with a lot of features.
+This paper presents a series of experimental results to determine which parallel genetic algorithm is a better fit to perform linear regression. In previous research some authors have studied parallel genetic algorithms applied to different tasks or genetic algorithms for regression without focusing on its parallelization. Although the research was well conducted, some points could have been improved, like the usage of more than one test case to compare the algorithms. Nevertheless, we will show how the Island model represents the better implemented approach, and which is the ideal amount of islands \textit{versus} number of cores available on the machine. Firstly, the sequential version was implemented, followed by the parallel approaches, starting by the simplest - like the ForkJoin and Phaser - and finished by developing the Island model. This work is helpful for anyone who needs to apply regression to data with a lot of features.
 
 \keywords{Parallel Genetic Programming \and Regression \and Island Model.}
 \end{abstract}
@@ -105,7 +105,7 @@ To properly evaluate the result of each approach, the dataset was firstly shuffl
 
 Originally, binary encoding was used to encode the solution \cite{whitley1994genetic}. That is, an individual was represented by a vector where each entrance corresponded to some feature being true for that particular individual. Later, other types of encoding were propposed in order to represent more sophisticated types of individuals, like the value encoding, permutation encoding, and trees \cite{martins2016gacuda}. We chose the last one for our work, since our goal is to encode expressions, that can be directly mapped to Abstract Syntax Trees.
 
-Choosing an Abstract Syntax Tree for the encoding allows us to easily generate random mathematical expressions with an immutable tree. Each node of the tree either represents a binary operator ($+,-,*,whole division$) node or a constant node, which can be a variable or value (any integer from -1000 to 1000).
+Choosing an Abstract Syntax Tree for the encoding allows us to easily generate random mathematical expressions with an immutable tree. Each node of the tree either represents a binary operator ($+,-,*,/,\%$) node or a constant node, which can be a variable or value (any integer from -1000 to 1000).
 
 The variable names were generated according to the dataset: from $x_{1}$ to $x_{n}$, where $n$ is the number of features from the dataset.
 
@@ -141,11 +141,11 @@ In addition, the sorting of the population is also performed, so that the first 
 
 For crossover and mutation there also are multiple strategies that can be chosen. For the sake of simplicity, we opted by following the simpler approaches: one-point crossover and the uniform mutation \cite{martins2016gacuda}.
 
-One-point crossover is accomplished by randomly selecting a point from both individuals selected and assigning the first part of the first parent to the first part of the offspring and the second part of the second parent to the second part of the offspring.
+One-point crossover is accomplished by randomly choosing a point from both individuals selected and assigning the first part of the first parent to the first part of the offspring and the second part of the second parent to the second part of the offspring.
 
 The uniform mutation consists of randomly choosing one node and changing its inner value uniformly from the available values. A constant node could have its inner content changed with a new value or variable, while a binary operator node would have its operation changed to a random one (each equally likely of being chosen).
 
-Note that, in the context of our work, the point is one of the nodes of the tree. So, to choose the node randomly, we developed the algorithm that follows:
+Note that, in the context of our work, the point is one of the nodes of the tree. So, to choose the node randomly, we developed the algorithm, which on the best case a search takes $O(log n)$ where n is the tree height,  that follows:
 \begin{algorithmic}
 \If {$node \, is \, Constant$}
         \State $return \,\, node$
@@ -160,7 +160,6 @@ Note that, in the context of our work, the point is one of the nodes of the tree
 \EndIf
 \end{algorithmic}
 
-
 \subsection{Adaptive Genetic Algorithm}
 The Adaptive implementation of a GA diverges from the regular implementation by not having the mutation and crossover rates fixed. Instead, the mutation and crossover rates are dynamic, and adapt depending on the progression made by each operation in the last generation \cite{adaptativeCrossOverMutation}.
 
@@ -168,7 +167,7 @@ The new offsprings are generated by crossing parents using an Adapted Fitness Pr
 
 \[ \left |\left | \frac{1}{\sigma \sqrt{2\pi}}*e^{-\frac{(-\mu)^2}{2\sigma^2}} \right | * (popSize\,/\,3) + crossoverRate)  \right | \%  \, popSize \]	
 
-The mutation rate controls the probability of an individual to suffer a mutation. This value is a value between 0.05 and 1.0.
+The mutation rate controls the probability of an individual to suffer a mutation. This value varies between 0.05 and 1.0.
 
 Both rates are updated according to the progressions they obtained for each individual. The chosen mutation rate offset is 0.05 and the crossover rate offset is \(populationSize * 0.025\).
 
@@ -193,14 +192,14 @@ Every thread is responsible for a portion of the population. In order to maintai
 
 The synchronization point has been introduced before and after the transition from the old population to the new one. This is a requirement since the GA operations cannot happen until every single expression from the new population has been introduced in the current population.
 
-Additionally, it was also introduced synchronization points before and after sorting the population. After every single individual has transitioned from the old to the new population, the thread with \(threadId := 0\) launches the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm. Once the algorithm finishes, every thread gets through the synchronization point and a new generation starts.
+Additionally, it was also included synchronization points before and after sorting the population. After every single individual has transitioned from the old to the new population, the thread with \(threadId := 0\) launches the \hyperref[subsubsec:parallelSort]{Parallel Population Sorting} algorithm. Once the algorithm finishes, every thread gets through the synchronization point and a new generation begins.
 
 The phaser runs the regular GA approach to compute each individual.
 
 \subsubsection{Island GA} \hfill \par
-To improve the efficiency of the algorithm, we have also implemented an Island Model for the GA. In this model, there are several independent computations of the algorithm running on different parts of the population \cite{islandModelGA}. Consequently, synchronization points are not required.
+To improve the efficiency of the algorithm, we have also implemented an Island Model for the GA. In this model, there are several independent computations of the algorithm running on different parts of the population \cite{islandModelGA}. Consequently, synchronization points are not required between islands.
 
-Each island has its own portion of the population, with size  $\frac{populationSize}{amountIslands}$. Occasionally - every 20 generations - the best individual of an island is sent to a random island and waits until is picked up before the sort starts, when replaces the last (worst) individual of the population of that island.
+Each island has its own portion of the population, with size  $\frac{populationSize}{amountIslands}$. Occasionally - every 20 generations - the best individual of an island is sent to another random island. The other island picks up and replaces the last (worst) individual of the population before the sorting starts.
 
 A naive approach would be to create one island per available processor. In our approach we took into account the quantity of available processors to create and hold the computation of the islands.Therefore, it is possible to create a variable amount of islands between $1$ and the amount of available processors. If the specified amount of islands is smaller than the amount of processors then the remaining available processors will be evenly distributed through the islands - starting by the first island, allowing them to contain inner parallelization. This allows the island to split the population with the amount of threads assigned to it and compute each generation quicker.
 
@@ -218,12 +217,14 @@ Every island runs the regular GA approach to compute each individual.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Implementation Details}
 
+The implementation has occured with Java programming language as its object-oriented features allows an easier implementation of the Abstract Syntax Tree and of each approach.
+
 \subsection{Abstract Syntax Tree}
 
 As mentioned above, Abstract Syntax Trees allow us to generate random mathematical expressions. Moreover, by using a Java expression builder\footnote{\href{https://www.objecthunter.net/exp4j/index.htm}{exp4j - Expression Builder from String for Java}}, it was possible to easily map values to variables of a given expression and obtain the result from it, which is useful when calculating the fitness of the tree.
 
 \subsubsection{Parallel Population Sorting} \label{subsubsec:parallelSort} \hfill \par
-Due to parallel mergesort ease of implementation and advantages of execution time \cite{analysisMergeSort}, the sorting of the population by fitness has been implemented with a parallel mergesort with linear insertion sort when the amount of population to compute is smaller than an offset of 7 .%% cita o porquê do 7
+Due to parallel mergesort ease of implementation and advantages of execution time \cite{analysisMergeSort}, the sorting of the population by fitness has been implemented with a parallel mergesort with linear insertion sort when the amount of population to compute is smaller than an offset of 7, similar to as used in Java Arrays \footnote{\href{http://www.docjar.com/html/api/java/util/Arrays.java.html}{Java Arrays implementation}}.
 The population is split in half until the offset is reached and the insertion sort and merge algorithms' are computed.
 
 \subsubsection{ForkJoin} \hfill \par
