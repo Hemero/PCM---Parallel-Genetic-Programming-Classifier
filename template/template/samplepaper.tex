@@ -174,11 +174,11 @@ Both rates are updated according to the progressions they obtained for each indi
 \begin{algorithmic}
 \If {$mutationProgress < crossOverProgress$}
         \State $mutationRate := min(1.0, mutationRate + mutationOffset)$
-        \State $crossoverRate := max(-popSize, crossoverRate - mutationOffset)$
+        \State $crossoverRate := max(-popSize, crossoverRate - crossOverOffset)$
 \EndIf
 \If {$mutationProgress > crossOverProgress$}
         \State $mutationRate := max(mutationOffset, mutationRate - mutationOffset)$
-        \State $crossoverRate := min(popSize, crossoverRate + mutationOffset)$
+        \State $crossoverRate := min(popSize, crossoverRate + crossOverOffset)$
 \EndIf
 \end{algorithmic}
 
@@ -251,7 +251,7 @@ Each island is implemented using the phaser approach for its inner parallelizati
 \subsection{Experimental Setup}
 The tests were made on a 24 cores machine with Intel(R) Xeon(R) CPU X5670@2.93GHz processors.
 
-The results have been gathered by running each approach 30 times, with a population of 1.000 individuals for 500 generations. An individual - expression tree - can have up to \(2^{10} + 1\) nodes when created and \(2^{15} + 1\) after crossover. For the first 250 generations, the training has been split in half and each part was tested in turns. For the rest of them, the whole training set was used.
+The results have been gathered by running eachparallel approach 30 times and the sequential approach 23 times, with a population of 1.000 individuals for 500 generations. An individual - expression tree - can have up to \(2^{10} + 1\) nodes when created and \(2^{15} + 1\) after crossover. For the first 250 generations, the training has been split in half and each part was tested in turns. For the rest of them, the whole training set was used.
 
 \subsection{Results}
 \begin{figure}[H]
